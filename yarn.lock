@@ -692,6 +692,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@metamask/detect-provider@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@metamask/detect-provider/-/detect-provider-1.2.0.tgz#3667a7531f2a682e3c3a43eaf3a1958bdb42a696"
+  integrity sha512-ocA76vt+8D0thgXZ7LxFPyqw3H7988qblgzddTDA6B8a/yU0uKV42QR/DhA+Jh11rJjxW0jKvwb5htA6krNZDQ==
+
 "@mui/base@5.0.0-alpha.121":
   version "5.0.0-alpha.121"
   resolved "https://registry.yarnpkg.com/@mui/base/-/base-5.0.0-alpha.121.tgz#24a238a32fc0386efcfefaf88d80712a0e00560c"
@@ -856,6 +861,14 @@
     zustand "^4.3.5"
   optionalDependencies:
     "@ethersproject/providers" "^5"
+
+"@web3-react/metamask@^8.1.2-beta.0":
+  version "8.1.2-beta.0"
+  resolved "https://registry.yarnpkg.com/@web3-react/metamask/-/metamask-8.1.2-beta.0.tgz#671f8b9601b275a4d7ca8cc694e6530c3c35ad4b"
+  integrity sha512-nw555Q86+I5EuLJnWILQIbhAaFdKNBugCNlsO00uJYSFPh26u+5KcNVl4G+7E2cCEY4cT0OhNOOGIYSZFuWADg==
+  dependencies:
+    "@metamask/detect-provider" "^1.2.0"
+    "@web3-react/types" "^8.1.2-beta.0"
 
 "@web3-react/network@^8.1.2-beta.0":
   version "8.1.2-beta.0"
