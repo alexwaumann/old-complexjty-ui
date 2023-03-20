@@ -1,32 +1,23 @@
 import {
-  AppBar,
   Avatar,
   Box,
-  Button,
   CssBaseline,
   Drawer,
   Stack,
   ThemeProvider,
-  Toolbar,
-  Typography
-} from '@mui/material'
+} from '@mui/material';
 
+import TopBar from './components/TopBar';
 import darkTheme from './darkTheme';
 
+const App = () => {
 
-function App() {
 
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline enableColorScheme />
 
-      <AppBar position="relative" color="transparent" elevation={0} variant="outlined">
-        <Toolbar>
-          <Box mr={9} />
-          <Typography variant="h6" flexGrow={1}>Page Title</Typography>
-          <Button variant="outlined">Connect Wallet</Button>
-        </Toolbar>
-      </AppBar>
+      <TopBar />
 
       <Drawer variant="permanent">
         <Box alignItems="center" sx={{ width: 72, pt: 2 }}>
