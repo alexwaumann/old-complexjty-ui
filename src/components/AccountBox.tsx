@@ -47,7 +47,7 @@ const AccountBox = () => {
     <Box
       height={52}
       color="000000"
-      bgcolor="#ffffff44"
+      bgcolor="#ffffff33"
       borderRadius={2}
       paddingX={1}
       display="flex"
@@ -70,7 +70,7 @@ const AccountBox = () => {
         onClose={handleCloseMenu}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        PaperProps={{ elevation: 0, sx: { mt: 1, borderRadius: 2, color: 'white', bgcolor: '#ffffff44' } }}
+        PaperProps={{ elevation: 0, sx: { mt: 1, borderRadius: 2, color: 'white', bgcolor: '#ffffff33' } }}
       >
         <MenuItem>
           <Stack direction="row" alignItems="center">

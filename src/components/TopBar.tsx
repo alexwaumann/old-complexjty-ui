@@ -33,7 +33,7 @@ const TopBar = () => {
         <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
           <Box
             height={52}
-            bgcolor="#ffffff44"
+            bgcolor="#ffffff33"
             borderRadius={2}
             paddingX={2}
             display="flex"
