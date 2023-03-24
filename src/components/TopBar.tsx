@@ -9,38 +9,61 @@ import {
   Typography,
 } from "@mui/material";
 
+import AccountBox from "./AccountBox";
 import {
   useIsActive,
   useIsActivating,
 } from "../connectors/network";
+import {
+  connectWallet,
+  useIsActive as useIsWalletActive,
+} from "../connectors/metamask";
 
 const TopBar = () => {
   const connected = useIsActive();
   const connecting = useIsActivating();
+  const walletConnected = useIsWalletActive();
 
   return(
     <AppBar position="relative" color="transparent" elevation={0} variant="outlined">
-      <Toolbar>
+      <Toolbar sx={{ paddingTop: 1, paddingBottom: 1 }}>
         <Box mr={9} />
         <Typography variant="h6" flexGrow={1}>Page Title</Typography>
 
-        <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={2}>
-          <Button variant="outlined" sx={{ pointerEvents: 'none' }}>
+        <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
+          <Box
+            height={52}
+            bgcolor="#ffffff44"
+            borderRadius={2}
+            paddingX={2}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
             <Badge
               variant="dot"
               overlap="circular"
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               color={connecting ? 'warning' : connected ? 'success' : 'error'}
             >
-              <Avatar src="/chain-images/polygon.png" sx={{ width: 24, height: 24 }} />
+              <Avatar src="/chain-images/polygon.png" sx={{ width: 28, height: 28 }} />
             </Badge>
-          </Button>
+          </Box>
 
-          <Button
-            variant="outlined"
-          >
-            Connect Wallet
-          </Button>
+          {walletConnected ? (
+            <AccountBox />
+          )
+          :
+          (
+            <Button
+              variant="contained"
+              disableElevation
+              onClick={() => connectWallet()}
+              sx={{ height: 52 }}
+            >
+              Connect Wallet
+            </Button>
+          )}
         </Stack>
       </Toolbar>
     </AppBar>
