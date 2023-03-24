@@ -72,7 +72,7 @@ const AccountBox = () => {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         PaperProps={{ elevation: 0, sx: { mt: 1, borderRadius: 2, color: 'white', bgcolor: '#ffffff33' } }}
       >
-        <MenuItem>
+        <MenuItem sx={{ pointerEvents: 'none' }}>
           <Stack direction="row" alignItems="center">
             <Badge variant="dot" color="success" />
             <Box m={1} />
