@@ -25,7 +25,7 @@ const TopBar = () => {
   const walletConnected = useIsWalletActive();
 
   return(
-    <AppBar position="relative" color="transparent" elevation={0} variant="outlined">
+    <AppBar position="relative" color="transparent" elevation={0}>
       <Toolbar sx={{ paddingTop: 1, paddingBottom: 1 }}>
         <Box mr={9} />
         <Typography variant="h6" flexGrow={1}>Page Title</Typography>
