@@ -49,11 +49,16 @@ const AccountBox = () => {
       color="000000"
       bgcolor="#ffffff33"
       borderRadius={2}
-      paddingX={1}
+      paddingLeft={2}
+      paddingRight={1}
       display="flex"
       alignItems="center"
     >
-      <Typography variant="caption">{displayName}</Typography>
+      <Stack direction="row" alignItems="center">
+        <Badge variant="dot" color="success" />
+        <Box m={1} />
+        <Typography variant="caption">{displayName}</Typography>
+      </Stack>
 
       <Box m={1} />
 
