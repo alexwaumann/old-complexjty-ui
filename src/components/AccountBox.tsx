@@ -1,3 +1,4 @@
+import { Verified } from "@mui/icons-material";
 import {
   Avatar,
   Badge,
@@ -32,6 +33,7 @@ import {
 
 const AccountBox = () => {
   const walletAddress = useAccount();
+  const verified = true; // useAuth((state) => state.verified);
   const displayName = 'Godyl'; // useAuth((state) => state.displayName);
   const displayAddress = `${walletAddress?.slice(0, 5)}...${walletAddress?.slice(38)}`;
 
@@ -50,10 +52,13 @@ const AccountBox = () => {
     <>
       <ButtonBase onClick={handleAvatarClicked} sx={{ height: 52, bgcolor: '#444', borderRadius: 2 }}>
         <Stack direction="row" alignItems="center" spacing={2} mx={1}>
+          {verified && <Verified color="primary" />}
+
           <Stack direction="column">
-            <Typography variant="caption">{displayName}</Typography>
+            {displayName && <Typography variant="caption">{displayName}</Typography>}
             <Typography variant="caption">{displayAddress}</Typography>
           </Stack>
+
           <Avatar
             src="/placeholder-pfp.webp"
             sx={{
@@ -80,10 +85,12 @@ const AccountBox = () => {
           </Stack>
         </MenuItem>
 
-        <Divider />
-        <MenuItem>
-          <Typography variant="caption">Get verified to access social features</Typography>
-        </MenuItem>
+        {!verified && <Divider />}
+        {!verified && (
+          <MenuItem>
+            <Typography variant="caption">Get verified to access social features</Typography>
+          </MenuItem>
+        )}
 
         <Divider />
         <MenuItem>
