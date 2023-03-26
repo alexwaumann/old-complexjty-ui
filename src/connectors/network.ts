@@ -23,9 +23,9 @@ export const {
 export const connectNetwork = async () => {
   await network.activate(CHAINID);
 
+  // RPC health check
   setInterval(async () => {
-    const networkStatus = await network.customProvider
-      ?.getNetwork()
+    const networkStatus = await network.customProvider?.getNetwork()
       .catch((error) => console.log(`Health Check Failed: ${error.event}`))
 
     state.setState({ chainId: networkStatus?.chainId });
