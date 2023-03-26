@@ -33,9 +33,9 @@ const TopBar = () => {
         <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
           <Box
             height={52}
-            bgcolor="#ffffff33"
+            bgcolor="#444"
             borderRadius={2}
-            paddingX={2}
+            paddingX={1.5}
             display="flex"
             alignItems="center"
             justifyContent="center"
@@ -50,17 +50,8 @@ const TopBar = () => {
             </Badge>
           </Box>
 
-          {walletConnected ? (
-            <AccountBox />
-          )
-          :
-          (
-            <Button
-              variant="contained"
-              disableElevation
-              onClick={() => connectWallet()}
-              sx={{ height: 52 }}
-            >
+          {walletConnected ? <AccountBox /> : (
+            <Button variant="contained" onClick={() => connectWallet()} sx={{ height: 52 }}>
               Connect Wallet
             </Button>
           )}
