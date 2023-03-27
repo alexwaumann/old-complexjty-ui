@@ -12,12 +12,7 @@ import {
 } from "@mui/material";
 import {useState} from "react";
 
-import {
-  useAccount,
-} from "../connectors/metamask";
-
-// TODO: TOMORROW
-// show state of connection with identifiers
+import useAuth, { disconnectWallet } from "../hooks/useAuth";
 
 /*
  * TODO
@@ -32,10 +27,11 @@ import {
  */
 
 const AccountBox = () => {
-  const walletAddress = useAccount();
-  const verified = true; // useAuth((state) => state.verified);
-  const displayName = 'Godyl'; // useAuth((state) => state.displayName);
-  const displayAddress = `${walletAddress?.slice(0, 5)}...${walletAddress?.slice(38)}`;
+  const onTargetChain = useAuth((auth) => auth.onTargetChain);
+  const address = useAuth((auth) => auth.address);
+  const verified = useAuth((auth) => auth.verified);
+  const username =  useAuth((auth) => auth.username);
+  const avatarUrl = useAuth((auth) => auth.avatarUrl);
 
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const menuOpen = Boolean(menuAnchor);
@@ -55,12 +51,12 @@ const AccountBox = () => {
           {verified && <Verified color="primary" />}
 
           <Stack direction="column">
-            {displayName && <Typography variant="caption">{displayName}</Typography>}
-            <Typography variant="caption">{displayAddress}</Typography>
+            {username && <Typography variant="caption">{username}</Typography>}
+            <Typography variant="caption">{`${address?.slice(0, 5)}...${address?.slice(38)}`}</Typography>
           </Stack>
 
           <Avatar
-            src="/placeholder-pfp.webp"
+            src={avatarUrl ? avatarUrl : ''}
             sx={{
               border: 1,
               borderWidth: 2,
@@ -79,9 +75,9 @@ const AccountBox = () => {
       >
         <MenuItem sx={{ pointerEvents: 'none' }}>
           <Stack direction="row" alignItems="center">
-            <Badge variant="dot" color="success" />
+            <Badge variant="dot" color={onTargetChain ? 'success' : 'warning'} />
             <Box m={1} />
-            <Typography variant="caption">{walletAddress}</Typography>
+            <Typography variant="caption">{address}</Typography>
           </Stack>
         </MenuItem>
 
@@ -103,7 +99,7 @@ const AccountBox = () => {
         </MenuItem>
 
         <Divider />
-        <MenuItem>
+        <MenuItem onClick={() => disconnectWallet()}>
           <Typography variant="caption">Disconnect</Typography>
         </MenuItem>
       </Menu>

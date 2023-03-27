@@ -14,15 +14,12 @@ import {
   useIsActive,
   useIsActivating,
 } from "../connectors/network";
-import {
-  connectWallet,
-  useIsActive as useIsWalletActive,
-} from "../connectors/metamask";
+import useAuth, { connectWallet } from "../hooks/useAuth";
 
 const TopBar = () => {
   const connected = useIsActive();
   const connecting = useIsActivating();
-  const walletConnected = useIsWalletActive();
+  const walletConnected = useAuth((auth) => auth.connected);
 
   return(
     <AppBar position="relative" color="transparent" elevation={0}>

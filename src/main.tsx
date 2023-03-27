@@ -8,10 +8,10 @@ import ReactDOM from 'react-dom/client';
 
 import App from './App';
 import { connectNetwork } from './connectors/network';
-import { connectEagerly } from './connectors/metamask';
+import { connectWalletEagerly } from './hooks/useAuth';
 
 connectNetwork();
-connectEagerly();
+connectWalletEagerly();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
