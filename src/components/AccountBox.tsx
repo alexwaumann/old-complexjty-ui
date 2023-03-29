@@ -1,10 +1,9 @@
-import { Verified } from "@mui/icons-material";
+import { VerifiedRounded } from "@mui/icons-material";
 import {
   Avatar,
-  Badge,
-  Box,
   ButtonBase,
   Divider,
+  ListItemIcon,
   Menu,
   MenuItem,
   Stack,
@@ -12,7 +11,7 @@ import {
 } from "@mui/material";
 import {useState} from "react";
 
-import useAuth, { disconnectWallet } from "../hooks/useAuth";
+import useAuth, { connectWallet, disconnectWallet } from "../hooks/useAuth";
 
 /*
  * TODO
@@ -48,7 +47,7 @@ const AccountBox = () => {
     <>
       <ButtonBase onClick={handleAvatarClicked} sx={{ height: 52, bgcolor: '#444', borderRadius: 2 }}>
         <Stack direction="row" alignItems="center" spacing={2} mx={1}>
-          {verified && <Verified color="primary" />}
+          {verified && <VerifiedRounded color="primary" />}
 
           <Stack direction="column">
             {username && <Typography variant="caption">{username}</Typography>}
@@ -74,33 +73,42 @@ const AccountBox = () => {
         PaperProps={{ sx: { mt: 1, borderRadius: 2, background: '#444' } }}
       >
         <MenuItem sx={{ pointerEvents: 'none' }}>
-          <Stack direction="row" alignItems="center">
-            <Badge variant="dot" color={onTargetChain ? 'success' : 'warning'} />
-            <Box m={1} />
-            <Typography variant="caption">{address}</Typography>
-          </Stack>
+          <Typography variant="subtitle2">{address}</Typography>
         </MenuItem>
+
+        {!onTargetChain && <Divider />}
+        {!onTargetChain && (
+          <MenuItem onClick={connectWallet}>
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <Avatar src="chain-images/polygon.png" sx={{ height: 22, width: 22 }} />
+              <Typography variant="body2">Switch to Polygon Mainnet</Typography>
+            </Stack>
+          </MenuItem>
+        )}
 
         {!verified && <Divider />}
         {!verified && (
           <MenuItem>
-            <Typography variant="caption">Get verified to access social features</Typography>
+            <ListItemIcon>
+              <VerifiedRounded color="primary" />
+            </ListItemIcon>
+            <Typography variant="body2">Get verified to access social features</Typography>
           </MenuItem>
         )}
 
         <Divider />
         <MenuItem>
-          <Typography variant="caption">Profile</Typography>
+          <Typography variant="body2">Profile</Typography>
         </MenuItem>
 
         <Divider />
         <MenuItem>
-          <Typography variant="caption">Settings</Typography>
+          <Typography variant="body2">Settings</Typography>
         </MenuItem>
 
         <Divider />
         <MenuItem onClick={() => disconnectWallet()}>
-          <Typography variant="caption">Disconnect</Typography>
+          <Typography variant="body2">Disconnect</Typography>
         </MenuItem>
       </Menu>
     </>
