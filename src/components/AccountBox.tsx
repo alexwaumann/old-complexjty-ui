@@ -31,6 +31,7 @@ const AccountBox = () => {
   const verified = useAuth((auth) => auth.verified);
   const username =  useAuth((auth) => auth.username);
   const avatarUrl = useAuth((auth) => auth.avatarUrl);
+  const rank = useAuth((auth) => auth.rank);
 
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const menuOpen = Boolean(menuAnchor);
@@ -58,7 +59,8 @@ const AccountBox = () => {
             src={avatarUrl ? avatarUrl : ''}
             sx={{
               border: 1,
-              borderWidth: 2,
+              borderWidth: 3,
+              borderColor: `rank.${rank?.toLowerCase()}`,
             }}
           />
         </Stack>

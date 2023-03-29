@@ -11,6 +11,7 @@ interface AuthState {
   address: string | null
   username: string | null
   avatarUrl: string | null
+  rank: string | null
 };
 
 // const useAuth = create<AuthState>((set, get) => ({
@@ -24,6 +25,7 @@ const useAuth = create<AuthState>(() => ({
   address: null,
   username: null,
   avatarUrl: null,
+  rank: null,
 }));
 
 export default useAuth;
@@ -90,7 +92,11 @@ const handleOnConnect = (address: string, chainId: number) => {
   // TODO: get avatar from registry (may not have one)
   const avatarUrl = '/placeholder-pfp.webp';
 
-  useAuth.setState({ onTargetChain, connected, verified, address, username, avatarUrl });
+  // TODO: get rank from server
+  // bronze, silver, gold, platinum, diamond, master (top 1%), god (#1)
+  const rank = 'God';
+
+  useAuth.setState({ onTargetChain, connected, verified, address, username, avatarUrl, rank });
 };
 
 const handleOnDisconnect = (address: string) => {
@@ -101,6 +107,7 @@ const handleOnDisconnect = (address: string) => {
     address: null,
     username: null,
     avatarUrl: null,
+    rank: null,
   });
 };
 
