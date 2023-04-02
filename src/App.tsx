@@ -22,7 +22,7 @@ const App = () => {
       <Drawer variant="permanent">
         <Box alignItems="center" sx={{ width: 72, pt: 2 }}>
           <Stack direction="column" alignItems="center" justifyContent="flex-start" spacing={2}>
-            <Avatar src="/logo.jpg" />
+            <Avatar src="/logo.png" />
           </Stack>
         </Box>
       </Drawer>
