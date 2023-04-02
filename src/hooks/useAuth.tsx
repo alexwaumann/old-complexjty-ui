@@ -10,8 +10,9 @@ interface AuthState {
 
   address: string | null
   username: string | null
-  avatarUrl: string | null
   rank: string | null
+
+  pfp: { url: string, tier: string, attributes: string[] } | null
 };
 
 // const useAuth = create<AuthState>((set, get) => ({
@@ -24,8 +25,9 @@ const useAuth = create<AuthState>(() => ({
   // USER DATA
   address: null,
   username: null,
-  avatarUrl: null,
   rank: null,
+
+  pfp: null,
 }));
 
 export default useAuth;
@@ -89,14 +91,18 @@ const handleOnConnect = (address: string, chainId: number) => {
   // TODO: get username from registry (may not have one)
   const username = 'Godyl';
 
-  // TODO: get avatar from registry (may not have one)
-  const avatarUrl = '/placeholder-pfp.webp';
-
   // TODO: get rank from server
-  // bronze, silver, gold, platinum, diamond, master (top 1%), god (#1)
-  const rank = 'God';
+  // bronze, silver, gold, platinum, diamond, master, luminary (top 100), god (#1)
+  const rank = 'Platinum';
 
-  useAuth.setState({ onTargetChain, connected, verified, address, username, avatarUrl, rank });
+  // TODO: get pfp from registry (may not have one) - we should default to null and handle in component
+  const pfp = {
+    url: '/placeholder-pfp.png',
+    tier: 'Mythic',
+    attributes: []
+  };
+
+  useAuth.setState({ onTargetChain, connected, verified, address, username, rank, pfp });
 };
 
 const handleOnDisconnect = (address: string) => {
@@ -106,8 +112,8 @@ const handleOnDisconnect = (address: string) => {
     verified: false,
     address: null,
     username: null,
-    avatarUrl: null,
     rank: null,
+    pfp: null,
   });
 };
 
