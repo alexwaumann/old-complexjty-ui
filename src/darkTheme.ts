@@ -2,26 +2,22 @@ import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
   interface Palette {
-    rank: {
-      bronze: string
-      silver: string
-      gold: string
-      platinum: string
-      diamond: string
-      master: string
-      god: string
+    rarity: {
+      common: string
+      uncommon: string
+      rare: string
+      mythic: string
+      artifact: string
     }
   }
 
   interface PaletteOptions {
-    rank: {
-      bronze: string
-      silver: string
-      gold: string
-      platinum: string
-      diamond: string
-      master: string
-      god: string
+    rarity: {
+      common: string
+      uncommon: string
+      rare: string
+      mythic: string
+      artifact: string
     }
   }
 };
@@ -39,15 +35,13 @@ let darkTheme = createTheme({
       main: '#90caf9',
       dark: '#42a5f5',
     },
-    rank: {
-      bronze: '#a97142',
-      silver: '#808080',
-      gold: '#d4af37',
-      platinum: '#ce93d8',
-      diamond: '#6cace4',
-      master: '#710c04',
-      god: '#ab47bc',
-    },
+    rarity: {
+      common: 'white',
+      uncommon: '#388e3c',
+      rare: '#6cace4',
+      mythic: '#ce93d8',
+      artifact: '#710c04',
+    }
   },
 });
 
