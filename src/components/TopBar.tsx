@@ -29,10 +29,10 @@ const TopBar = () => {
 
         <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
           <Box
-            height={52}
-            bgcolor="#444"
+            height={64}
+            bgcolor="#333"
             borderRadius={2}
-            paddingX={1.5}
+            paddingX={2}
             display="flex"
             alignItems="center"
             justifyContent="center"
