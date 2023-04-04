@@ -48,7 +48,7 @@ const TopBar = () => {
           </Box>
 
           {walletConnected ? <AccountBox /> : (
-            <Button variant="contained" onClick={() => connectWallet()} sx={{ height: 52 }}>
+            <Button variant="contained" onClick={() => connectWallet()} sx={{ height: 64 }}>
               Connect Wallet
             </Button>
           )}
