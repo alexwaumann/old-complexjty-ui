@@ -3,11 +3,10 @@ import { Network } from '@web3-react/network';
 
 export const CHAINID = 137;
 
+const rpcUrl = import.meta.env.DEV ? 'http://localhost:8545' : 'https://polygon-mainnet.g.alchemy.com/v2/6YUtaEGT8dEkgjyUSZv8D9hwRHJ2CSDX'
+
 const networkMapping = {
-  [CHAINID]: [
-    'https://polygon-mainnet.g.alchemy.com/v2/6YUtaEGT8dEkgjyUSZv8D9hwRHJ2CSDX',
-    'https://polygon.llamarpc.com',
-  ]
+  [CHAINID]: [rpcUrl],
 };
 
 export const [network, hooks, state] = initializeConnector<Network>(
