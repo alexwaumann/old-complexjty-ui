@@ -6,13 +6,13 @@ import {
   Stack,
   ThemeProvider,
 } from '@mui/material';
+import { Route, Switch } from 'wouter';
 
 import TopBar from './components/TopBar';
 import darkTheme from './darkTheme';
+import TradePage from './pages/TradePage';
 
 const App = () => {
-
-
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline enableColorScheme />
@@ -27,8 +27,16 @@ const App = () => {
         </Box>
       </Drawer>
 
+      <Box sx={{ ml: 9, mt: 2 }}>
+        <Switch>
+          <Route path="/">
+            <TradePage />
+          </Route>
+        </Switch>
+      </Box>
+
     </ThemeProvider>
   )
-}
+};
 
-export default App
+export default App;
