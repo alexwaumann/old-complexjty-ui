@@ -3,6 +3,8 @@ import { create } from "zustand";
 import { metamask, state as metamaskState } from "../connectors/metamask";
 import { CHAINID } from "../connectors/network";
 
+const RPCURL = import.meta.env.DEV ? 'http://localhost:8545' : 'https://polygon-rpc.com';
+
 interface AuthState {
   onTargetChain: boolean
   connected: boolean
@@ -12,7 +14,7 @@ interface AuthState {
   username: string | null
   rank: string | null
 
-  pfp: { url: string, tier: string, attributes: string[] } | null
+  pfp: { url: string, rarity: string, attributes: string[] } | null
 };
 
 // const useAuth = create<AuthState>((set, get) => ({
@@ -62,7 +64,7 @@ metamaskState.subscribe((state, prevState) => {
 export const connectWallet = () => metamask.activate({
   chainName: 'Polygon Mainnet',
   chainId: 137,
-  rpcUrls: ['https://polygon-rpc.com'],
+  rpcUrls: [RPCURL],
   blockExplorerUrls: ['https://polygonscan.com'],
   nativeCurrency: {
     name: 'Matic',
@@ -98,7 +100,7 @@ const handleOnConnect = (address: string, chainId: number) => {
   // TODO: get pfp from registry (may not have one) - we should default to null and handle in component
   const pfp = {
     url: '/placeholder-pfp.png',
-    tier: 'Mythic',
+    rarity: 'Mythic',
     attributes: []
   };
 
