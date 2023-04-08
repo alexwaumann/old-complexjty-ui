@@ -1,7 +1,6 @@
 import { VerifiedRounded } from "@mui/icons-material";
 import {
   Avatar,
-  Badge,
   ButtonBase,
   Divider,
   ListItemIcon,
@@ -13,20 +12,9 @@ import {
 import {useState} from "react";
 
 import useAuth, { connectWallet, disconnectWallet } from "../hooks/useAuth";
+import Pfp from "./Pfp";
 
-/*
- * TODO
- * Avatar border color based on player rank (determined by server rr)
- * Menu should display:
- *    * Address and rank info
- *    * Wallet network status
- *    * Verification status (enables social features)
- *    * Settings
- *    * Disconnect option (should disconnect wallet + remove reset verification status)
- * Display a way for the user to connect wallet to correct network
- */
-
-const AccountBox = () => {
+const AccountBox = ({height}: {height: number}) => {
   const onTargetChain = useAuth((auth) => auth.onTargetChain);
   const address = useAuth((auth) => auth.address);
   const verified = useAuth((auth) => auth.verified);
@@ -47,7 +35,7 @@ const AccountBox = () => {
 
   return (
     <>
-      <ButtonBase onClick={handleAvatarClicked} sx={{ height: 64, bgcolor: '#333', borderRadius: 2 }}>
+      <ButtonBase onClick={handleAvatarClicked} sx={{ height, bgcolor: '#333', borderRadius: 2 }}>
         <Stack direction="row" alignItems="center" spacing={2} mx={1}>
           {verified && <VerifiedRounded color="primary" sx={{ height: 28, width: 28 }} />}
 
@@ -56,27 +44,7 @@ const AccountBox = () => {
             <Typography variant="caption">{`${address?.slice(0, 5)}...${address?.slice(38)}`}</Typography>
           </Stack>
 
-          <Badge
-            overlap="circular"
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            badgeContent={
-              <Avatar
-                src={`/rank-images/${rank?.toLowerCase()}.png`}
-                sx={{ height: 20, width: 20, border: 1, borderWidth: 1 }}
-              />
-            }
-          >
-            <Avatar
-              src={pfp ? pfp.url : ''}
-              sx={{
-                height: 52,
-                width: 52,
-                border: 1,
-                borderWidth: 3,
-                borderColor: `tier.${pfp?.tier.toLowerCase()}`,
-              }}
-            />
-          </Badge>
+          <Pfp size={height - 12} pfp={pfp} rank={rank} />
         </Stack>
       </ButtonBase>
 
@@ -91,27 +59,7 @@ const AccountBox = () => {
         <MenuItem sx={{ pointerEvents: 'none' }}>
           <Stack spacing={2}>
             <Stack direction="row" alignItems="center" justifyContent="center">
-            <Badge
-              overlap="circular"
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-              badgeContent={
-                <Avatar
-                  src={`/rank-images/${rank?.toLowerCase()}.png`}
-                  sx={{ height: 28, width: 28, border: 1, borderWidth: 2 }}
-                />
-              }
-            >
-                <Avatar
-                  src={pfp ? pfp.url : ''}
-                  sx={{
-                    height: 96,
-                    width: 96,
-                    border: 1,
-                    borderWidth: 5,
-                    borderColor: `tier.${pfp?.tier.toLowerCase()}`,
-                  }}
-                />
-              </Badge>
+              <Pfp size={128} border={4} pfp={pfp} rank={rank} />
             </Stack>
             <Typography variant="subtitle2">{address}</Typography>
           </Stack>

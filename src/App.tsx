@@ -1,9 +1,6 @@
 import {
-  Avatar,
   Box,
   CssBaseline,
-  Drawer,
-  Stack,
   ThemeProvider,
 } from '@mui/material';
 import { Route, Switch } from 'wouter';
@@ -19,19 +16,13 @@ const App = () => {
 
       <TopBar />
 
-      <Drawer variant="permanent">
-        <Box alignItems="center" sx={{ width: 72, pt: 2 }}>
-          <Stack direction="column" alignItems="center" justifyContent="flex-start" spacing={2}>
-            <Avatar src="/logo.png" />
-          </Stack>
-        </Box>
-      </Drawer>
-
-      <Box sx={{ ml: 9, mt: 2 }}>
+      <Box sx={{ pt: 11, pb: 2, height: '100vh', overflow: 'auto' }}>
         <Switch>
+
           <Route path="/">
             <TradePage />
           </Route>
+
         </Switch>
       </Box>
 

@@ -6,7 +6,6 @@ import {
   Button,
   Stack,
   Toolbar,
-  Typography,
 } from "@mui/material";
 
 import AccountBox from "./AccountBox";
@@ -16,20 +15,29 @@ import {
 } from "../connectors/network";
 import useAuth, { connectWallet } from "../hooks/useAuth";
 
+const toolbarHeight = 80;
+const toolbarPaddingY = 1;
+const toolbarItemHeight = toolbarHeight - toolbarPaddingY * 2 * 8;
+
 const TopBar = () => {
   const connected = useIsActive();
   const connecting = useIsActivating();
   const walletConnected = useAuth((auth) => auth.connected);
 
   return(
-    <AppBar position="relative" color="transparent" elevation={0}>
-      <Toolbar sx={{ paddingTop: 1, paddingBottom: 1 }}>
-        <Box mr={9} />
-        <Typography variant="h6" flexGrow={1}>Page Title</Typography>
+    <AppBar position="absolute" elevation={0} sx={{ background: '#12121299' }}>
+      <Toolbar sx={{ height: toolbarHeight, py: toolbarPaddingY }}>
+        <Avatar 
+          variant="rounded"
+          src="/logo.png"
+          sx={{ height: toolbarItemHeight, width: toolbarItemHeight }}
+        />
+
+        <Box flexGrow={1} />
 
         <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={1}>
           <Box
-            height={64}
+            height={toolbarItemHeight}
             bgcolor="#333"
             borderRadius={2}
             paddingX={2}
@@ -43,15 +51,19 @@ const TopBar = () => {
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               color={connecting ? 'warning' : connected ? 'success' : 'error'}
             >
-              <Avatar src="/chain-images/polygon.png" sx={{ width: 28, height: 28 }} />
+              <Avatar src="/chain-images/polygon.png" sx={{ width: 32, height: 32 }} />
             </Badge>
           </Box>
 
-          {walletConnected ? <AccountBox /> : (
-            <Button variant="contained" onClick={() => connectWallet()} sx={{ height: 64 }}>
-              Connect Wallet
-            </Button>
-          )}
+          {walletConnected ? 
+            <AccountBox height={toolbarItemHeight} />
+            : 
+            (
+              <Button variant="contained" onClick={() => connectWallet()} sx={{ height: toolbarItemHeight }}>
+                Connect Wallet
+              </Button>
+            )
+          }
         </Stack>
       </Toolbar>
     </AppBar>
