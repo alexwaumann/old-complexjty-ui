@@ -13,6 +13,7 @@ import {useState} from "react";
 
 import useAuth, { connectWallet, disconnectWallet } from "../hooks/useAuth";
 import Pfp from "./Pfp";
+import TokenBalanceList from "./TokenBalanceList";
 
 const AccountBox = ({height}: {height: number}) => {
   const onTargetChain = useAuth((auth) => auth.onTargetChain);
@@ -40,8 +41,10 @@ const AccountBox = ({height}: {height: number}) => {
           {verified && <VerifiedRounded color="primary" sx={{ height: 28, width: 28 }} />}
 
           <Stack direction="column">
-            {username && <Typography variant="caption">{username}</Typography>}
-            <Typography variant="caption">{`${address?.slice(0, 5)}...${address?.slice(38)}`}</Typography>
+            {username && <Typography variant="caption" fontWeight={700}>{username}</Typography>}
+            <Typography variant="caption" fontWeight={700}>
+              {`${address?.slice(0, 5)}...${address?.slice(38)}`}
+            </Typography>
           </Stack>
 
           <Pfp size={height - 12} pfp={pfp} rank={rank} />
@@ -61,7 +64,8 @@ const AccountBox = ({height}: {height: number}) => {
             <Stack direction="row" alignItems="center" justifyContent="center">
               <Pfp size={128} border={4} pfp={pfp} rank={rank} />
             </Stack>
-            <Typography variant="subtitle2">{address}</Typography>
+            <Typography variant="caption" fontWeight={700}>{address}</Typography>
+            <TokenBalanceList />
           </Stack>
         </MenuItem>
 
