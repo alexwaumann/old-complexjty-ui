@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { metamask, state as metamaskState } from "../connectors/metamask";
-import { CHAINID } from "../connectors/network";
+import { balanceOfAll, SupportedTokenMap } from "../services/tokens";
 
 const RPCURL = import.meta.env.DEV ? 'http://localhost:8545' : 'https://polygon-rpc.com';
 
@@ -15,6 +15,8 @@ interface AuthState {
   rank: string | null
 
   pfp: { url: string, rarity: string, attributes: string[] } | null
+
+  balances: SupportedTokenMap<number>
 };
 
 // const useAuth = create<AuthState>((set, get) => ({
@@ -30,6 +32,8 @@ const useAuth = create<AuthState>(() => ({
   rank: null,
 
   pfp: null,
+
+  balances: { 'USDC': 0, 'MATIC': 0, 'WETH': 0, 'WBTC': 0 },
 }));
 
 export default useAuth;
@@ -55,7 +59,7 @@ metamaskState.subscribe((state, prevState) => {
 
   // handle on chainId changed
   } else if(chainId !== 0) {
-    useAuth.setState({ onTargetChain: chainId === CHAINID });
+    useAuth.setState({ onTargetChain: chainId === 137 });
   }
 });
 
@@ -84,7 +88,7 @@ export const disconnectWallet = () => metamask.resetState();
 // HANDLERS
 
 const handleOnConnect = (address: string, chainId: number) => {
-  const onTargetChain = chainId === CHAINID;
+  const onTargetChain = chainId === 137;
   const connected = true;
 
   // TODO: check if user is verified
@@ -103,6 +107,11 @@ const handleOnConnect = (address: string, chainId: number) => {
     rarity: 'Mythic',
     attributes: []
   };
+
+  balanceOfAll(address).then((balances) => {
+    if(balances === null) return;
+    useAuth.setState({ balances });
+  });
 
   useAuth.setState({ onTargetChain, connected, verified, address, username, rank, pfp });
 };

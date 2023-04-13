@@ -8,17 +8,11 @@ import { ethers } from 'ethers';
 import { create } from 'zustand';
 
 import { provider } from './provider';
-
-// NOTE: to add new tokens, make changes here
-// TODO: this should probably be in a token utility file
-type SupportedToken = 'USDC' | 'MATIC' | 'WETH' | 'WBTC';
-type SupportedTokenMap<T> = { 'USDC': T, 'MATIC': T, 'WETH': T, 'WBTC': T };
+import { SupportedToken, SupportedTokenMap } from './tokens';
 
 const DEFAULT_PRICES: SupportedTokenMap<number> = { 'USDC': 0, 'MATIC': 0, 'WETH': 0, 'WBTC': 0 };
 
 // SECTION: PUBLIC
-export const supportedTokens: SupportedToken[] = ['USDC', 'MATIC', 'WETH', 'WBTC'];
-
 interface OracleDataInterface { prices: SupportedTokenMap<number> };
 export const useOracle = create<OracleDataInterface>(() => ({
   prices: DEFAULT_PRICES,
@@ -26,7 +20,7 @@ export const useOracle = create<OracleDataInterface>(() => ({
 
 export const oraclePricesSelector = (state: OracleDataInterface) => state.prices;
 
-// SECTION: CHAINLINK ORACLE DATA
+// SECTION: PRIVATE
 const oracleAbi = ['function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)'];
 
 type latestRoundDataResponse = { answer: bigint };
@@ -41,7 +35,6 @@ const oracleContract: SupportedTokenMap<ethers.Contract> = {
 const oracleHearbeatMs = 27000;
 const oracleDecimals = 8;
 
-// SECTION: PRIVATE
 const refreshPrices = async () => {
   const promises: Promise<latestRoundDataResponse>[] = Object.values(oracleContract).map(
     (contract) => contract.latestRoundData()
