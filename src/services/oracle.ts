@@ -7,16 +7,14 @@
 import { ethers } from 'ethers';
 import { create } from 'zustand';
 
+import { provider } from './provider';
+
 // NOTE: to add new tokens, make changes here
 // TODO: this should probably be in a token utility file
 type SupportedToken = 'USDC' | 'MATIC' | 'WETH' | 'WBTC';
 type SupportedTokenMap<T> = { 'USDC': T, 'MATIC': T, 'WETH': T, 'WBTC': T };
 
 const DEFAULT_PRICES: SupportedTokenMap<number> = { 'USDC': 0, 'MATIC': 0, 'WETH': 0, 'WBTC': 0 };
-
-// TODO: create a provider service
-const polygonNetwork = new ethers.Network('Polygon Mainnet', 137);
-const provider = new ethers.JsonRpcProvider('http://localhost:8545', polygonNetwork, { staticNetwork: polygonNetwork });
 
 // SECTION: PUBLIC
 export const supportedTokens: SupportedToken[] = ['USDC', 'MATIC', 'WETH', 'WBTC'];
