@@ -11,19 +11,19 @@ const TokenBalanceList = () => {
 
   // TODO: create token component that takes in a symbol and size
   return (
-    <Stack spacing={2}>
+    <Stack flexGrow={1} spacing={2}>
       {tokens.map((symbol) => {
         const amount = balances[symbol];
         const usdValue = amount * oracle[symbol];
         if(usdValue < 10) return;
         return (
           <Stack key={symbol} direction="row" alignItems="center" spacing={2}>
-            <Avatar src={`token-images/${symbol.toLowerCase()}.png`} sx={{ height: 20, width: 20 }} />
-            <Typography variant="body2" fontWeight={500}>
+            <Avatar src={`token-images/${symbol.toLowerCase()}.png`} sx={{ height: 24, width: 24 }} />
+            <Typography variant="body2" fontWeight={700}>
               {formatTokenAmount(symbol, amount)}
             </Typography>
             <Box flexGrow={1} />
-            <Typography variant="caption" fontWeight={500}>
+            <Typography variant="caption" fontWeight={700}>
               ${formatUsdPrice(usdValue)}
             </Typography>
           </Stack>

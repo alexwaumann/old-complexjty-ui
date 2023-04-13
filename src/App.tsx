@@ -16,7 +16,7 @@ const App = () => {
 
       <TopBar />
 
-      <Box sx={{ pt: 11, pb: 2, height: '100vh', overflow: 'auto' }}>
+      <Box sx={{ pt: 10, pb: 2, height: '100vh', overflow: 'auto' }}>
         <Switch>
 
           <Route path="/">

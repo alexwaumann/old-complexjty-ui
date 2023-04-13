@@ -60,13 +60,16 @@ const AccountBox = ({height}: {height: number}) => {
         PaperProps={{ sx: { mt: 1, borderRadius: 2, background: '#333' } }}
       >
         <MenuItem sx={{ pointerEvents: 'none' }}>
-          <Stack spacing={2}>
-            <Stack direction="row" alignItems="center" justifyContent="center">
-              <Pfp size={128} border={4} pfp={pfp} rank={rank} />
-            </Stack>
+          <Stack direction="column" alignItems="center" justifyContent="center" spacing={1}>
+            <Pfp size={128} border={4} pfp={pfp} rank={rank} />
+            <Typography variant="h6" fontWeight={700}>{username}</Typography>
             <Typography variant="caption" fontWeight={700}>{address}</Typography>
-            <TokenBalanceList />
           </Stack>
+        </MenuItem>
+
+        <Divider />
+        <MenuItem sx={{ pointerEvents: 'none' }}>
+          <TokenBalanceList />
         </MenuItem>
 
         {!onTargetChain && <Divider />}

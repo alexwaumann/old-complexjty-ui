@@ -9,7 +9,7 @@ import {
 import AccountBox from "./AccountBox";
 import useAuth, { connectWallet } from "../hooks/useAuth";
 
-const toolbarHeight = 80;
+const toolbarHeight = 72;
 const toolbarPaddingY = 1;
 const toolbarItemHeight = toolbarHeight - toolbarPaddingY * 2 * 8;
 
