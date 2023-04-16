@@ -15,7 +15,7 @@ interface Token {
 
 // SECTION: PUBLIC
 export type SupportedToken = 'USDC' | 'MATIC' | 'WETH' | 'WBTC';
-export type SupportedTokenMap<T> = { 'USDC': T, 'MATIC': T, 'WETH': T, 'WBTC': T };
+export type SupportedTokenMap<T> = Record<SupportedToken, T>;
 
 export const tokens: SupportedToken[] = ['USDC', 'MATIC', 'WETH', 'WBTC'];
 export const token: SupportedTokenMap<Token> = {
