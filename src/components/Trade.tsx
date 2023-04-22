@@ -3,7 +3,7 @@ import { Box, Button, Grid, InputAdornment, MenuItem, Paper, Select, Slider, Sta
 import { useState } from "react";
 
 import useAuth from "../hooks/useAuth";
-import { oraclePricesSelector, useOracle } from "../services/oracle";
+import { oraclePriceMapSelector, useOracle } from "../services/oracle";
 import { SupportedToken, TOKEN, TOKENS } from "../services/tokens";
 import { formatTokenAmount, formatUsdPrice } from "../utils/format";
 import { PAIRS, PAIR, SupportedPair } from "../utils/pairs";
@@ -13,7 +13,7 @@ const LONG = 'LONG';
 const SHORT = 'SHORT';
 
 const Trade = () => {
-  const oracle = useOracle(oraclePricesSelector);
+  const oracle = useOracle(oraclePriceMapSelector);
   const balances = useAuth((state) => state.balances);
 
   const [pairName, setPairName] = useState<SupportedPair>('WETH/USDC');

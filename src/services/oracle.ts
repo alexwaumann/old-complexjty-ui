@@ -17,7 +17,7 @@ import { SupportedToken, SupportedTokenMap } from './tokens';
 // TYPE DEFINITIONS
 type LatestRoundDataResponse = { answer: bigint };
 type OracleData = {
-  loading: boolean
+  ready: boolean
   priceMap: SupportedTokenMap<number>
 };
 type OracleMetadata = {
@@ -52,15 +52,15 @@ const contractMap: SupportedTokenMap<ethers.Contract> = {
 
 // STORE
 export const useOracle = create<OracleData>(() => ({
-  loading: true,
+  ready: false,
   priceMap: DEFAULT_PRICE_MAP,
 }));
 
 export const getOracleData = useOracle.getState;
 const setOracleData = useOracle.setState;
 
-export const oracleLoadingSelector = (state: OracleData) => state.loading;
-export const oraclePricesSelector  = (state: OracleData) => state.priceMap;
+export const oracleReadySelector = (state: OracleData) => state.ready;
+export const oraclePriceMapSelector  = (state: OracleData) => state.priceMap;
 
 // METHODS
 const updatePrices = async (): Promise<void> => {
@@ -80,8 +80,7 @@ const updatePrices = async (): Promise<void> => {
     (token, index) => priceMap[token as SupportedToken] = latestPrices[index]
   );
 
-  console.log('updating prices...');
-  setOracleData({ priceMap });
+  setOracleData({ ready: true, priceMap });
 };
 
 
