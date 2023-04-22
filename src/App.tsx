@@ -8,8 +8,11 @@ import { Route, Switch } from 'wouter';
 import TopBar from './components/TopBar';
 import darkTheme from './darkTheme';
 import TradePage from './pages/TradePage';
+import { useOracleService } from './services/oracle';
 
 const App = () => {
+  useOracleService();
+
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline enableColorScheme />
