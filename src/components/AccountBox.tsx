@@ -11,8 +11,9 @@ import {
 } from "@mui/material";
 import {useState} from "react";
 
-import useAuth, { connectWallet, disconnectWallet } from "../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 import Pfp from "./Pfp";
+import { connectWallet, disconnectWallet } from "../services/metamask";
 import TokenBalanceList from "./TokenBalanceList";
 
 const AccountBox = ({height}: {height: number}) => {

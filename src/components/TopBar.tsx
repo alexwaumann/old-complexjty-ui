@@ -7,7 +7,8 @@ import {
 } from "@mui/material";
 
 import AccountBox from "./AccountBox";
-import useAuth, { connectWallet } from "../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
+import { connectWallet } from "../services/metamask";
 
 const toolbarHeight = 72;
 const toolbarPaddingY = 1;

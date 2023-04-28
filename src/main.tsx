@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import App from './App';
-import { connectWalletEagerly } from './hooks/useAuth';
+import { connectWalletEagerly } from './services/metamask';
 
 connectWalletEagerly();
 
