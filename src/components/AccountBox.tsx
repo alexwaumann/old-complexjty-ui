@@ -13,11 +13,11 @@ import {useState} from "react";
 
 import useAuth from "../hooks/useAuth";
 import Pfp from "./Pfp";
-import { connectWallet, disconnectWallet } from "../services/metamask";
+import { connectWallet, disconnectWallet, metamaskConnectedSelector, metamaskOnTargetChainSelector, useMetamask } from "../services/metamask";
 import TokenBalanceList from "./TokenBalanceList";
 
 const AccountBox = ({height}: {height: number}) => {
-  const onTargetChain = useAuth((auth) => auth.onTargetChain);
+  const onTargetChain = useMetamask(metamaskOnTargetChainSelector);
   const address = useAuth((auth) => auth.address);
   const verified = useAuth((auth) => auth.verified);
   const username =  useAuth((auth) => auth.username);

@@ -1,10 +1,9 @@
 import { create } from "zustand";
 
-import { state as metamaskState } from "../services/metamask";
+import { metamaskAccountSelector, useMetamask } from "../services/metamask";
 import { balanceOfAll, SupportedTokenMap } from "../services/tokens";
 
 interface AuthState {
-  onTargetChain: boolean
   connected: boolean
   verified: boolean
 
@@ -20,7 +19,6 @@ interface AuthState {
 // const useAuth = create<AuthState>((set, get) => ({
 const useAuth = create<AuthState>(() => ({
   // AUTH STATE
-  onTargetChain: false,
   connected: false,
   verified: false,
 
@@ -36,37 +34,23 @@ const useAuth = create<AuthState>(() => ({
 
 export default useAuth;
 
-metamaskState.subscribe((state, prevState) => {
-  const chainId = state.chainId === undefined ? 0 : state.chainId;
+// METHODS
 
-  // handle on connect
-  if(prevState.accounts === undefined && state.accounts !== undefined) {
-    handleOnConnect(state.accounts[0], chainId)
-
-  // handle on disconnect
-  } else if(prevState.accounts !== undefined && state.accounts === undefined) {
-    handleOnDisconnect(prevState.accounts[0]);
-
-  // handle on account switched
-  } else if(
-    prevState.accounts !== undefined &&
-    state.accounts !== undefined &&
-    prevState.accounts[0] !== state.accounts[0]
-  ) {
-    handleOnAccountSwitch(state.accounts[0], chainId);
-
-  // handle on chainId changed
-  } else if(chainId !== 0) {
-    useAuth.setState({ onTargetChain: chainId === 137 });
+// SUBSCRIPTIONS
+useMetamask.subscribe(metamaskAccountSelector, (account, previousAccount) => {
+  if(account !== undefined && previousAccount === undefined) {
+    // handle account connected
+    handleOnConnect(account)
+  } else if (account === undefined && previousAccount !== undefined) {
+    // handle account disconnected
+    handleOnDisconnect();
+  } else if (account !== undefined && account !== undefined) {
+    handleOnConnect(account);
   }
 });
 
-// METHODS
-
 // HANDLERS
-
-const handleOnConnect = (address: string, chainId: number) => {
-  const onTargetChain = chainId === 137;
+const handleOnConnect = (address: string) => {
   const connected = true;
 
   // TODO: check if user is verified
@@ -91,12 +75,11 @@ const handleOnConnect = (address: string, chainId: number) => {
     useAuth.setState({ balances });
   });
 
-  useAuth.setState({ onTargetChain, connected, verified, address, username, rank, pfp });
+  useAuth.setState({ connected, verified, address, username, rank, pfp });
 };
 
-const handleOnDisconnect = (address: string) => {
+const handleOnDisconnect = () => {
   useAuth.setState({
-    onTargetChain: false,
     connected: false,
     verified: false,
     address: null,
@@ -104,8 +87,4 @@ const handleOnDisconnect = (address: string) => {
     rank: null,
     pfp: null,
   });
-};
-
-const handleOnAccountSwitch = (address: string, chainId: number) => {
-  console.log('handleOnAccountSwitch');
 };

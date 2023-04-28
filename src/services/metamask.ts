@@ -12,7 +12,6 @@ import { subscribeWithSelector } from "zustand/middleware";
 
 // TYPE DEFINITIONS
 type Metamask = {
-  ready: boolean
   onTargetChain: boolean
 
   account: string | undefined
@@ -24,13 +23,11 @@ type Metamask = {
 const RPCURL = import.meta.env.DEV ? 'http://localhost:8545' : 'https://polygon-rpc.com';
 const TARGET_CHAIN_ID = 137;
 
-export const [metamask, hooks, state] = initializeConnector<MetaMask>(
-  (actions) => new MetaMask({ actions })
-);
+const [metamask, hooks, state] = initializeConnector<MetaMask>((actions) => new MetaMask({ actions }));
 
 // STORE
-const useMetamask = create(subscribeWithSelector<Metamask>(() => ({
-  ready: false,
+export const useMetamask = create(subscribeWithSelector<Metamask>(() => ({
+  connected: false,
   onTargetChain: false,
 
   account: undefined,
@@ -38,7 +35,6 @@ const useMetamask = create(subscribeWithSelector<Metamask>(() => ({
   signer: undefined,
 })));
 
-export const getMetmaskData = useMetamask.getState;
 const setMetmaskData = useMetamask.setState;
 
 export const metamaskOnTargetChainSelector = (state: Metamask) => state.onTargetChain;
@@ -57,7 +53,6 @@ const initState = async (account: string, chainId: number) => {
 
   // update state store
   setMetmaskData({
-    ready: true,
     onTargetChain: chainId === TARGET_CHAIN_ID,
 
     account,
@@ -89,7 +84,6 @@ export const connectWallet = async () => {
 }
 
 export const connectWalletEagerly = async () => {
-  // TODO: skip eager connect if user disconnected on last session
   await metamask.connectEagerly();
 
   const [accounts, chainId ] = [state.getState().accounts ,state.getState().chainId];
@@ -101,10 +95,13 @@ export const connectWalletEagerly = async () => {
 export const disconnectWallet = () => {
   metamask.resetState();
 
+  setMetmaskData({
+    onTargetChain: false,
 
-  // reset state
+    account: undefined,
+    provider: undefined,
+    signer: undefined,
+  });
 };
 
 // TODO: a toast message when user is not connected to correct network
-
-// UTILS
