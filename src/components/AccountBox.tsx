@@ -13,7 +13,7 @@ import {useState} from "react";
 
 import useAuth from "../hooks/useAuth";
 import Pfp from "./Pfp";
-import { connectWallet, disconnectWallet, metamaskConnectedSelector, metamaskOnTargetChainSelector, useMetamask } from "../services/metamask";
+import { connectWallet, metamaskOnTargetChainSelector, useMetamask } from "../services/metamask";
 import TokenBalanceList from "./TokenBalanceList";
 
 const AccountBox = ({height}: {height: number}) => {
@@ -101,11 +101,6 @@ const AccountBox = ({height}: {height: number}) => {
         <Divider />
         <MenuItem>
           <Typography variant="body2">Settings</Typography>
-        </MenuItem>
-
-        <Divider />
-        <MenuItem onClick={() => disconnectWallet()}>
-          <Typography variant="body2">Disconnect</Typography>
         </MenuItem>
       </Menu>
     </>

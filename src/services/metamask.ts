@@ -100,13 +100,6 @@ export const connectWallet = () => {
     .catch(() => setMetamaskData({ connecting: false }));
 }
 
-// TODO: bug here.. after a disconnect using this fn, we can no longer
-//       connectWallet since metamask account state doesn't trigger a
-//       state change when we disconnect like this
-export const disconnectWallet = () => {
-  setMetamaskData({ account: undefined });
-};
-
 const setupMetamask = (): boolean => {
   if(metamask.provider === undefined) {
     handleNoMetamaskFoundError();
