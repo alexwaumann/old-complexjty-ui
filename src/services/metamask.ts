@@ -14,6 +14,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 // SECTION: TYPE DEFINITIONS
 type Metamask = {
   onTargetChain: boolean | undefined
+  connecting: boolean
   error: boolean
   ready: boolean
   account: string | undefined
@@ -29,6 +30,7 @@ const TARGET_CHAIN_ID = 137;
 // SECTION: STORE
 export const useMetamask = create(subscribeWithSelector<Metamask>(() => ({
   onTargetChain: false,
+  connecting: false,
   error: false,
   ready: false,
   account: undefined,
@@ -37,9 +39,10 @@ export const useMetamask = create(subscribeWithSelector<Metamask>(() => ({
 })));
 
 export const getMetamaskData = useMetamask.getState;
+export const metamaskOnTargetChainSelector = (state: Metamask) => state.onTargetChain;
+export const metamaskConnectingSelector = (state: Metamask) => state.connecting;
 export const metamaskErrorSelector = (state: Metamask) => state.error;
 export const metamaskReadySelector = (state: Metamask) => state.ready;
-export const metamaskOnTargetChainSelector = (state: Metamask) => state.onTargetChain;
 export const metamaskAccountSelector = (state: Metamask) => state.account;
 export const metamaskProviderSelector = (state: Metamask) => state.provider;
 export const metamaskSignerSelector = (state: Metamask) => state.signer;
@@ -47,6 +50,7 @@ export const metamaskSignerSelector = (state: Metamask) => state.signer;
 const setMetamaskData = useMetamask.setState;
 const resetMetamaskData = () => setMetamaskData({
   onTargetChain: undefined,
+  connecting: false,
   ready: false,
   error: false,
   account: undefined,
@@ -61,13 +65,15 @@ const resetMetamaskData = () => setMetamaskData({
  * it will setup the metamask service and update the store with relevant data.
  */
 export const connectWalletEagerly = async () => {
-  await metamask.connectEagerly();
+  setMetamaskData({ connecting: true });
+  await metamask.connectEagerly().catch((e) => console.log(e));
 
   if(!setupMetamask()) return;
 
   // @ts-expect-error
   const account: string | null = metamask.provider.selectedAddress;
   if(!account) {
+    setMetamaskData({ connecting: false });
     console.warn('COMPLEXJTY: NO ACCOUNT CONNECTED');
     return;
   };
@@ -77,20 +83,26 @@ export const connectWalletEagerly = async () => {
 /**
  * This will not work if connectWalletEagerly has not been called
  */
-export const connectWallet = async () => {
-  await metamask.activate({
-    chainName: 'Polygon Mainnet',
-    chainId: 137,
-    rpcUrls: [RPCURL],
-    blockExplorerUrls: ['https://polygonscan.com'],
-    nativeCurrency: {
-      name: 'Matic',
-      symbol: 'MATIC',
-      decimals: 18,
-    },
-  });
+export const connectWallet = () => {
+  setMetamaskData({ connecting: true });
+  metamask
+    .activate({
+      chainName: 'Polygon Mainnet',
+      chainId: 137,
+      rpcUrls: [RPCURL],
+      blockExplorerUrls: ['https://polygonscan.com'],
+      nativeCurrency: {
+        name: 'Matic',
+        symbol: 'MATIC',
+        decimals: 18,
+      },
+    })
+    .catch(() => setMetamaskData({ connecting: false }));
 }
 
+// TODO: bug here.. after a disconnect using this fn, we can no longer
+//       connectWallet since metamask account state doesn't trigger a
+//       state change when we disconnect like this
 export const disconnectWallet = () => {
   setMetamaskData({ account: undefined });
 };
@@ -131,7 +143,7 @@ const handleOnConnect = async (account: string) => {
 
   setMetamaskData({
     onTargetChain: chainId === TARGET_CHAIN_ID,
-
+    connecting: false,
     ready: true,
     error: false,
     account,
