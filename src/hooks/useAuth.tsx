@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { metamaskAccountSelector, useMetamask } from "../services/metamask";
+import { getMetamaskData, metamaskAccountSelector, metamaskReadySelector, useMetamask } from "../services/metamask";
 import { balanceOfAll, SupportedTokenMap } from "../services/tokens";
 
 interface AuthState {
@@ -37,20 +37,12 @@ export default useAuth;
 // METHODS
 
 // SUBSCRIPTIONS
-useMetamask.subscribe(metamaskAccountSelector, (account, previousAccount) => {
-  if(account !== undefined && previousAccount === undefined) {
-    // handle account connected
-    handleOnConnect(account)
-  } else if (account === undefined && previousAccount !== undefined) {
-    // handle account disconnected
-    handleOnDisconnect();
-  } else if (account !== undefined && account !== undefined) {
-    handleOnConnect(account);
-  }
+useMetamask.subscribe(metamaskReadySelector, (ready) => {
+  ready ? handleOnConnect(getMetamaskData().account as string) : handleOnDisconnect();
 });
 
 // HANDLERS
-const handleOnConnect = (address: string) => {
+const handleOnConnect = async (address: string) => {
   const connected = true;
 
   // TODO: check if user is verified
@@ -86,5 +78,6 @@ const handleOnDisconnect = () => {
     username: null,
     rank: null,
     pfp: null,
+    balances: { 'USDC': 0, 'MATIC': 0, 'WETH': 0, 'WBTC': 0 },
   });
 };
