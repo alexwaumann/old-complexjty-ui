@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
-import { getMetamaskData, metamaskAccountSelector, metamaskReadySelector, useMetamask } from "../services/metamask";
 import { balanceOfAll, SupportedTokenMap } from "../services/tokens";
+import { wallet } from "../services/wallet";
 
 interface AuthState {
   connected: boolean
@@ -37,8 +37,8 @@ export default useAuth;
 // METHODS
 
 // SUBSCRIPTIONS
-useMetamask.subscribe(metamaskReadySelector, (ready) => {
-  ready ? handleOnConnect(getMetamaskData().account as string) : handleOnDisconnect();
+wallet.subscribe((state) => state.isAccountConnected, (isAccountConnected) => {
+  isAccountConnected ? handleOnConnect(wallet.state.account as string) : handleOnDisconnect();
 });
 
 // HANDLERS

@@ -64,64 +64,51 @@ export const useWallet = create(subscribeWithSelector<WalletState>(() => ({
   signer: undefined,
 })));
 
-const setWalletState = useWallet.setState;
-const getWalletState = useWallet.getState;
-
 class Wallet {
   private targetChainId: number = 137;
 
-  private onChainChanged(chainIdHex: string): void {
-    const chainId = parseInt(chainIdHex, 16);
-    setWalletState({ onTargetChain: chainId === this.targetChainId });
-  }
-
-  private onAccountsChanged([account]: string[]): void {
-    if(account === undefined) {
-      // todo: handle account disconnected
-      return;
-    }
-
-    // todo: handle account connected and/or switched
-  }
+  public get state() { return useWallet.getState() }
+  public subscribe = useWallet.subscribe;
+  private setState = useWallet.setState;
 
   public async start(): Promise<void> {
-    const { isActive, isActivating } = getWalletState();
-    if(isActive || isActivating) return;
+    if(this.state.isActive || this.state.isActivating) return;
 
-    setWalletState({ isActivating: true });
+    this.setState({ isActivating: true });
 
     const injectedProvider = await detectEthereumProvider<Provider>();
     if(injectedProvider === null) {
-      setWalletState({ isActivating: false, hasNoMetamaskError: true });
+      this.setState({ isActivating: false, hasNoMetamaskError: true });
       console.warn('COMPLEXJTY: NO INJECTED WALLET FOUND');
       return;
     } else if(injectedProvider !== window.ethereum) {
       // todo: we should handle this differently
-      setWalletState({ isActivating: false, hasNoMetamaskError: true });
+      this.setState({ isActivating: false, hasNoMetamaskError: true });
       console.warn('COMPLEXJTY: MULTIPLE INJECTED WALLETS');
       return;
     }
 
     injectedProvider.removeAllListeners();
-    injectedProvider.on('chainChanged', this.onChainChanged);
-    injectedProvider.on('accountsChanged', this.onAccountsChanged);
+    injectedProvider.on('chainChanged', (chainIdHex: string) => this.onChainChanged(chainIdHex));
+    injectedProvider.on('accountsChanged', (accounts: string[]) => this.onAccountsChanged(accounts));
 
     const provider = new ethers.BrowserProvider(injectedProvider as ethers.Eip1193Provider);
     const chainId = await provider.getNetwork().then((network) => Number(network.chainId));
-    setWalletState({
+    this.setState({
       isActive: true,
       isActivating: false,
       provider,
       injectedProvider,
       onTargetChain: chainId === this.targetChainId,
     });
+
   }
 
   public stop(): void {
-    getWalletState().injectedProvider?.removeAllListeners();
-    getWalletState().provider?.removeAllListeners();
+    this.state.injectedProvider?.removeAllListeners();
+    this.state.provider?.removeAllListeners();
 
-    setWalletState({
+    this.setState({
       isActive: false,
       isActivating: false,
       provider: undefined,
@@ -134,23 +121,48 @@ class Wallet {
    * Send metamask a request to view user's wallet address
   */
   public async connect(): Promise<void> {
-    const { isAccountConnected, isAccountConnecting, provider } = getWalletState();
-    if(isAccountConnected || isAccountConnecting) return;
+    if(this.state.isAccountConnected || this.state.isAccountConnecting) return;
 
-    setWalletState({ isAccountConnecting: true });
+    this.setState({ isAccountConnecting: true });
 
-    const [account] = await provider?.send('eth_requestAccounts', [])
-      .catch(() => []);
-    console.log(`account: ${account}`);
-    console.log(account);
+    const [account] = await this.state.provider?.send('eth_requestAccounts', []).catch(() => []);
+    if(account === undefined) {
+      this.setState({ isAccountConnecting: false });
+      return;
+    }
 
-    setWalletState({isAccountConnecting: false});
+    const signer = await this.state.provider?.getSigner(account);
+
+    this.setState({
+      isAccountConnected: true,
+      isAccountConnecting: false,
+      account,
+      signer,
+    });
   }
 
   /**
    * Send metamask a request to prompt user to switch to correct network
   */
   public fixNetwork(): void {
+  }
+
+  private onChainChanged(chainIdHex: string): void {
+    const chainId = parseInt(chainIdHex, 16);
+    this.setState({ onTargetChain: chainId === this.targetChainId });
+  }
+
+  private onAccountsChanged([account]: string[]): void {
+    this.setState({
+      isAccountConnected: false,
+      isAccountConnecting: false,
+      account: undefined,
+      signer: undefined,
+    });
+
+    if(account === undefined) return;
+
+    this.connect();
   }
 };
 

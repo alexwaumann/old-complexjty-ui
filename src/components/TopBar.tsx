@@ -8,7 +8,6 @@ import {
 
 import AccountBox from "./AccountBox";
 import useAuth from "../hooks/useAuth";
-import { connectWallet, metamaskConnectingSelector, metamaskErrorSelector, useMetamask } from "../services/metamask";
 import { useWallet, wallet } from "../services/wallet";
 
 const toolbarHeight = 72;
@@ -16,9 +15,7 @@ const toolbarPaddingY = 1;
 const toolbarItemHeight = toolbarHeight - toolbarPaddingY * 2 * 8;
 
 const TopBar = () => {
-  const walletIsConnecting = useMetamask(metamaskConnectingSelector);
-  const walletConnected = useAuth((auth) => auth.connected);
-  const noMetamaskError = useMetamask(metamaskErrorSelector);
+  const isUserConnected = useAuth((auth) => auth.connected);
   const isWalletActive = useWallet((state) => state.isActive);
   const isAccountConnecting = useWallet((state) => state.isAccountConnecting);
 
@@ -33,14 +30,13 @@ const TopBar = () => {
 
         <Box flexGrow={1} />
 
-        {walletConnected ? 
+        {isUserConnected ? 
           <AccountBox height={toolbarItemHeight} />
           : 
           (
             <Button
               variant="contained"
               disabled={!isWalletActive || isAccountConnecting}
-              // onClick={() => connectWallet()}
               onClick={() => wallet.connect()}
               sx={{ height: toolbarItemHeight }}
             >
