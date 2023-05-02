@@ -16,21 +16,9 @@ type MetaMaskEthereumProvider = {
   removeListener(eventName: string | symbol, listener: (...args: any[]) => void): MetaMaskEthereumProvider
   removeAllListeners(event?: string | symbol): MetaMaskEthereumProvider
 };
-
-type RequestArguments = {
-  method: string;
-  params?: unknown[] | object;
-};
-
-type Provider = MetaMaskEthereumProvider & {
-  request: (args: RequestArguments) => Promise<any>
-}
-
-declare global {
-  interface Window {
-    ethereum?: Provider;
-  }
-};
+type RequestArguments = { method: string, params?: unknown[] | object };
+type EthereumProvider = MetaMaskEthereumProvider & { request: (args: RequestArguments) => Promise<any> }
+declare global { interface Window { ethereum?: EthereumProvider } };
 
 type WalletState = {
   isActive: boolean
@@ -38,7 +26,7 @@ type WalletState = {
   hasNoMetamaskError: boolean
 
   provider: ethers.BrowserProvider | undefined
-  injectedProvider: Provider | undefined
+  injectedProvider: EthereumProvider | undefined
   onTargetChain: boolean 
 
   isAccountConnected: boolean
@@ -76,7 +64,7 @@ class Wallet {
 
     this.setState({ isActivating: true });
 
-    const injectedProvider = await detectEthereumProvider<Provider>();
+    const injectedProvider = await detectEthereumProvider<EthereumProvider>();
     if(injectedProvider === null) {
       this.setState({ isActivating: false, hasNoMetamaskError: true });
       console.warn('COMPLEXJTY: NO INJECTED WALLET FOUND');
