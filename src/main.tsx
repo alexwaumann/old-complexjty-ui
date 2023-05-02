@@ -2,9 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import App from './App';
-import { connectWalletEagerly } from './services/metamask';
+import { wallet } from './services/wallet';
+// import { connectWalletEagerly } from './services/metamask';
 
-connectWalletEagerly();
+// connectWalletEagerly();
+wallet.start();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

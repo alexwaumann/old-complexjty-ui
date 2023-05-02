@@ -9,6 +9,7 @@ import {
 import AccountBox from "./AccountBox";
 import useAuth from "../hooks/useAuth";
 import { connectWallet, metamaskConnectingSelector, metamaskErrorSelector, useMetamask } from "../services/metamask";
+import { useWallet, wallet } from "../services/wallet";
 
 const toolbarHeight = 72;
 const toolbarPaddingY = 1;
@@ -18,6 +19,8 @@ const TopBar = () => {
   const walletIsConnecting = useMetamask(metamaskConnectingSelector);
   const walletConnected = useAuth((auth) => auth.connected);
   const noMetamaskError = useMetamask(metamaskErrorSelector);
+  const isWalletActive = useWallet((state) => state.isActive);
+  const isAccountConnecting = useWallet((state) => state.isAccountConnecting);
 
   return(
     <AppBar position="absolute" elevation={0} sx={{ background: '#12121299' }}>
@@ -36,8 +39,9 @@ const TopBar = () => {
           (
             <Button
               variant="contained"
-              disabled={walletIsConnecting || noMetamaskError}
-              onClick={() => connectWallet()}
+              disabled={!isWalletActive || isAccountConnecting}
+              // onClick={() => connectWallet()}
+              onClick={() => wallet.connect()}
               sx={{ height: toolbarItemHeight }}
             >
               Connect Wallet
