@@ -13,11 +13,11 @@ import {useState} from "react";
 
 import useAuth from "../hooks/useAuth";
 import Pfp from "./Pfp";
-import { connectWallet, metamaskOnTargetChainSelector, useMetamask } from "../services/metamask";
+import { useWallet, wallet } from '../services/wallet';
 import TokenBalanceList from "./TokenBalanceList";
 
 const AccountBox = ({height}: {height: number}) => {
-  const onTargetChain = useMetamask(metamaskOnTargetChainSelector);
+  const onTargetChain = useWallet((state) => state.onTargetChain);
   const address = useAuth((auth) => auth.address);
   const verified = useAuth((auth) => auth.verified);
   const username =  useAuth((auth) => auth.username);
@@ -75,7 +75,7 @@ const AccountBox = ({height}: {height: number}) => {
 
         {!onTargetChain && <Divider />}
         {!onTargetChain && (
-          <MenuItem onClick={connectWallet}>
+          <MenuItem onClick={() => wallet.connect()}>
             <Stack direction="row" alignItems="center" spacing={2}>
               <Avatar src="chain-images/polygon.png" sx={{ height: 22, width: 22 }} />
               <Typography variant="body2">Switch to Polygon Mainnet</Typography>
