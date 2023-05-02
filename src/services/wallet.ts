@@ -145,6 +145,18 @@ class Wallet {
    * Send metamask a request to prompt user to switch to correct network
   */
   public fixNetwork(): void {
+    // todo: prompt metamask to connect to correct network
+    // {
+    //   chainName: 'Polygon Mainnet',
+    //   chainId: 137,
+    //   rpcUrls: [RPCURL],
+    //   blockExplorerUrls: ['https://polygonscan.com'],
+    //   nativeCurrency: {
+    //     name: 'Matic',
+    //     symbol: 'MATIC',
+    //     decimals: 18,
+    //   },
+    // }
   }
 
   private onChainChanged(chainIdHex: string): void {
