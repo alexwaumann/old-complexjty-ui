@@ -94,7 +94,7 @@ class Wallet {
 
   public stop(): void {
     this.state.injectedProvider?.removeAllListeners();
-    this.state.provider?.removeAllListeners();
+    this.state.provider?.destroy();
 
     this.setState({
       isActive: false,
@@ -109,7 +109,8 @@ class Wallet {
    * Send metamask a request to view user's wallet address
   */
   public async connect(): Promise<void> {
-    if(this.state.isAccountConnected || this.state.isAccountConnecting) return;
+    const { isActive, isAccountConnected, isAccountConnecting } = this.state;
+    if(!isActive || isAccountConnected || isAccountConnecting) return;
 
     this.setState({ isAccountConnecting: true });
 
@@ -119,7 +120,12 @@ class Wallet {
       return;
     }
 
-    const signer = await this.state.provider?.getSigner(account);
+    const signer = await this.state.provider?.getSigner(account).catch(() => undefined);
+    if(signer === undefined) {
+      console.warn('COMPLEXJTY: FAILED TO GET SIGNER');
+      this.setState({ isAccountConnecting: false });
+      return;
+    }
 
     this.setState({
       isAccountConnected: true,
@@ -129,10 +135,23 @@ class Wallet {
     });
   }
 
+  public disconnect(): void {
+    this.setState({
+      isAccountConnected: false,
+      isAccountConnecting: false,
+      account: undefined,
+      signer: undefined,
+    });
+  }
+
   /**
    * Send metamask a request to prompt user to switch to correct network
   */
   public fixNetwork(): void {
+    if(!this.state.isActive || this.state.onTargetChain) return;
+    
+    // todo: finish implementing this
+    this.state.provider?.send('wallet_switchEthereumChain', [{ chainId: '0x89' }]).catch(() => null);
     // todo: prompt metamask to connect to correct network
     // {
     //   chainName: 'Polygon Mainnet',
@@ -150,19 +169,19 @@ class Wallet {
   private onChainChanged(chainIdHex: string): void {
     const chainId = parseInt(chainIdHex, 16);
     this.setState({ onTargetChain: chainId === this.targetChainId });
+
+    // recreate provider
+    this.state.provider?.destroy();
+    const provider = new ethers.BrowserProvider(this.state?.injectedProvider as ethers.Eip1193Provider);
+    this.setState({ provider });
+
+    // attach new provider to signer (if we have one)
+    this.state.signer?.connect(provider);
   }
 
   private onAccountsChanged([account]: string[]): void {
-    this.setState({
-      isAccountConnected: false,
-      isAccountConnecting: false,
-      account: undefined,
-      signer: undefined,
-    });
-
-    if(account === undefined) return;
-
-    this.connect();
+    this.disconnect();
+    if(account !== undefined) this.connect();
   }
 };
 
