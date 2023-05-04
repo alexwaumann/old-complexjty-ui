@@ -102,6 +102,11 @@ const AccountBox = ({height}: {height: number}) => {
         <MenuItem>
           <Typography variant="body2">Settings</Typography>
         </MenuItem>
+
+        <Divider />
+        <MenuItem onClick={() => wallet.disconnect()}>
+          <Typography variant="body2">Disconnect</Typography>
+        </MenuItem>
       </Menu>
     </>
   )

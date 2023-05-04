@@ -90,6 +90,10 @@ class Wallet {
       onTargetChain: chainId === this.targetChainId,
     });
 
+    // connect eagerly if user previously connected and didn't disconnect
+    const [account] = await provider.send('eth_accounts', []).catch(() => undefined);
+    if(!this.shouldEagerlyConnect || account === undefined) return;
+    this.connect();
   }
 
   public stop(): void {
@@ -127,6 +131,7 @@ class Wallet {
       return;
     }
 
+    this.shouldEagerlyConnect = true;
     this.setState({
       isAccountConnected: true,
       isAccountConnecting: false,
@@ -136,6 +141,7 @@ class Wallet {
   }
 
   public disconnect(): void {
+    this.shouldEagerlyConnect = false;
     this.setState({
       isAccountConnected: false,
       isAccountConnecting: false,
@@ -190,6 +196,20 @@ class Wallet {
   private onAccountsChanged([account]: string[]): void {
     this.disconnect();
     if(account !== undefined) this.connect();
+  }
+
+  private get shouldEagerlyConnect(): boolean {
+    let shouldEagerlyConnectString = localStorage.getItem('walletShouldEagerlyConnect');
+    if(shouldEagerlyConnectString === null) return false;
+
+    const shouldEagerlyConnect = JSON.parse(shouldEagerlyConnectString);
+    if(typeof shouldEagerlyConnect !== 'boolean') return false;
+
+    return shouldEagerlyConnect;
+  }
+
+  private set shouldEagerlyConnect(value: boolean) {
+    localStorage.setItem('walletShouldEagerlyConnect', JSON.stringify(value));
   }
 };
 
