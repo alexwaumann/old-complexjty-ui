@@ -149,7 +149,7 @@ class Wallet {
   */
   public fixNetwork(): void {
     if(!this.state.isActive || this.state.onTargetChain) return;
-    
+
     // todo: finish implementing this
     this.state.provider?.send('wallet_switchEthereumChain', [{ chainId: '0x89' }]).catch(() => null);
     // todo: prompt metamask to connect to correct network
@@ -166,7 +166,7 @@ class Wallet {
     // }
   }
 
-  private onChainChanged(chainIdHex: string): void {
+  private async onChainChanged(chainIdHex: string): Promise<void> {
     const chainId = parseInt(chainIdHex, 16);
     this.setState({ onTargetChain: chainId === this.targetChainId });
 
@@ -175,8 +175,16 @@ class Wallet {
     const provider = new ethers.BrowserProvider(this.state?.injectedProvider as ethers.Eip1193Provider);
     this.setState({ provider });
 
-    // attach new provider to signer (if we have one)
-    this.state.signer?.connect(provider);
+    // recreate signer if account is connected
+    if(!this.state.isAccountConnected) return;
+    const signer = await provider.getSigner(this.state.account).catch(() => undefined);
+    if(signer === undefined) {
+      this.disconnect();
+      console.warn('COMPLEXJTY: FAILED TO GET SIGNER');
+      return;
+    }
+
+    this.setState({ signer });
   }
 
   private onAccountsChanged([account]: string[]): void {
