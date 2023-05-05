@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import { Route, Switch } from 'wouter';
 
+import FixNetworkSnackbar from './components/FixNetworkSnackbar';
 import TopBar from './components/TopBar';
 import darkTheme from './darkTheme';
 import TradePage from './pages/TradePage';
@@ -28,6 +29,8 @@ const App = () => {
 
         </Switch>
       </Box>
+
+      <FixNetworkSnackbar />
 
     </ThemeProvider>
   )

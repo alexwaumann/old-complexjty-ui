@@ -1,6 +1,5 @@
 import { VerifiedRounded } from "@mui/icons-material";
 import {
-  Avatar,
   ButtonBase,
   Divider,
   ListItemIcon,
@@ -13,11 +12,10 @@ import {useState} from "react";
 
 import useAuth from "../hooks/useAuth";
 import Pfp from "./Pfp";
-import { useWallet, wallet } from '../services/wallet';
+import { wallet } from '../services/wallet';
 import TokenBalanceList from "./TokenBalanceList";
 
 const AccountBox = ({height}: {height: number}) => {
-  const onTargetChain = useWallet((state) => state.onTargetChain);
   const address = useAuth((auth) => auth.address);
   const verified = useAuth((auth) => auth.verified);
   const username =  useAuth((auth) => auth.username);
@@ -72,16 +70,6 @@ const AccountBox = ({height}: {height: number}) => {
         <MenuItem sx={{ pointerEvents: 'none' }}>
           <TokenBalanceList />
         </MenuItem>
-
-        {!onTargetChain && <Divider />}
-        {!onTargetChain && (
-          <MenuItem onClick={() => wallet.fixNetwork()}>
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Avatar src="chain-images/polygon.png" sx={{ height: 22, width: 22 }} />
-              <Typography variant="body2">Switch to Polygon Mainnet</Typography>
-            </Stack>
-          </MenuItem>
-        )}
 
         {!verified && <Divider />}
         {!verified && (
