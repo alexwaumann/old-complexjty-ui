@@ -93,7 +93,7 @@ class Wallet {
     });
 
     // connect eagerly if user previously connected and didn't disconnect
-    const [account] = await provider.send('eth_accounts', []).catch(() => undefined);
+    const [account] = await provider.send('eth_accounts', []).catch(() => []);
     if(!this.shouldEagerlyConnect || account === undefined) return;
     this.connect();
   }
