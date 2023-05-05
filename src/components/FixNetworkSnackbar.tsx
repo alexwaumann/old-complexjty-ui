@@ -5,6 +5,7 @@ import { useWallet, wallet } from "../services/wallet";
 
 const FixNetworkSnackbar = () => {
   const onTargetChain = useWallet((state) => state.onTargetChain);
+  const isAccountConnected = useWallet((state) => state.isAccountConnected);
   const [fixInProgress, setFixInProgress] = useState<boolean>(false);
 
   const fixNetwork = async () => {
@@ -14,11 +15,10 @@ const FixNetworkSnackbar = () => {
   };
 
   return (
-    <Snackbar open={!onTargetChain} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+    <Snackbar open={!onTargetChain && isAccountConnected} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
       <Alert
         severity="error"
-        action={<Button color="secondary" disabled={fixInProgress} onClick={fixNetwork}>Fix</Button>
-}
+        action={<Button color="secondary" disabled={fixInProgress} onClick={fixNetwork}>Fix</Button>}
         sx={{ width: '100%' }}
       >
         <Typography>Your wallet is not connected to Polygon Mainnet</Typography>
