@@ -54,6 +54,8 @@ export const useWallet = create(subscribeWithSelector<WalletState>(() => ({
 
 class Wallet {
   private targetChainId: number = 137;
+  private devRpcUrls = ['http://localhost:8545'];
+  private prodRpcUrls = ['https://polygon-rpc.com', 'https://polygon.llamarpc.com'];
 
   public get state() { return useWallet.getState() }
   public subscribe = useWallet.subscribe;
@@ -153,23 +155,25 @@ class Wallet {
   /**
    * Send metamask a request to prompt user to switch to correct network
   */
-  public fixNetwork(): void {
+  public async fixNetwork(): Promise<void> {
     if(!this.state.isActive || this.state.onTargetChain) return;
 
-    // todo: finish implementing this
-    this.state.provider?.send('wallet_switchEthereumChain', [{ chainId: '0x89' }]).catch(() => null);
-    // todo: prompt metamask to connect to correct network
-    // {
-    //   chainName: 'Polygon Mainnet',
-    //   chainId: 137,
-    //   rpcUrls: [RPCURL],
-    //   blockExplorerUrls: ['https://polygonscan.com'],
-    //   nativeCurrency: {
-    //     name: 'Matic',
-    //     symbol: 'MATIC',
-    //     decimals: 18,
-    //   },
-    // }
+    const error = await this.state.provider
+      ?.send('wallet_switchEthereumChain',[{ chainId: '0x89' }])
+      .catch((error) => error);
+    if(error === null || error?.error?.code !== 4902) return;
+
+    await this.state.provider?.send('wallet_addEthereumChain', [{
+      chainName: 'Polygon Mainnet',
+      chainId: '0x89',
+      rpcUrls: import.meta.env.DEV ? this.devRpcUrls : this.prodRpcUrls,
+      blockExplorerUrls: ['https://polygonscan.com'],
+      nativeCurrency: {
+        name: 'Matic',
+        symbol: 'MATIC',
+        decimals: 18,
+      },
+    }]).catch(() => undefined);
   }
 
   private async onChainChanged(chainIdHex: string): Promise<void> {

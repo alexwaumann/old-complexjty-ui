@@ -75,7 +75,7 @@ const AccountBox = ({height}: {height: number}) => {
 
         {!onTargetChain && <Divider />}
         {!onTargetChain && (
-          <MenuItem onClick={() => wallet.connect()}>
+          <MenuItem onClick={() => wallet.fixNetwork()}>
             <Stack direction="row" alignItems="center" spacing={2}>
               <Avatar src="chain-images/polygon.png" sx={{ height: 22, width: 22 }} />
               <Typography variant="body2">Switch to Polygon Mainnet</Typography>
