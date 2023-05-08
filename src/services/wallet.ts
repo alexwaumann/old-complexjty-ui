@@ -203,12 +203,20 @@ class Wallet {
   }
 
   private get shouldEagerlyConnect(): boolean {
-    let shouldEagerlyConnectString = localStorage.getItem('walletShouldEagerlyConnect');
+    const shouldEagerlyConnectString = localStorage.getItem('walletShouldEagerlyConnect');
     if(shouldEagerlyConnectString === null) return false;
 
-    const shouldEagerlyConnect = JSON.parse(shouldEagerlyConnectString);
-    if(typeof shouldEagerlyConnect !== 'boolean') return false;
-
+    let shouldEagerlyConnect: boolean;
+    try {
+      shouldEagerlyConnect = JSON.parse(shouldEagerlyConnectString);
+      if(typeof shouldEagerlyConnect !== 'boolean') {
+        this.shouldEagerlyConnect = false;
+        return false;
+      };
+    } catch {
+      this.shouldEagerlyConnect = false;
+      return false;
+    }
     return shouldEagerlyConnect;
   }
 
