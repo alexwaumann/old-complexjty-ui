@@ -137,7 +137,7 @@ class Wallet {
     this.setState({
       isAccountConnected: true,
       isAccountConnecting: false,
-      account,
+      account: ethers.getAddress(account),
       signer,
     });
   }
