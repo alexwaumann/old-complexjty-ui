@@ -10,17 +10,14 @@ import {
 } from "@mui/material";
 import {useState} from "react";
 
-import useAuth from "../hooks/useAuth";
 import Pfp from "./Pfp";
+import { useUser } from "../services/user";
 import { wallet } from '../services/wallet';
 import TokenBalanceList from "./TokenBalanceList";
 
 const AccountBox = ({height}: {height: number}) => {
-  const address = useAuth((auth) => auth.address);
-  const verified = useAuth((auth) => auth.verified);
-  const username =  useAuth((auth) => auth.username);
-  const pfp = useAuth((auth) => auth.pfp);
-  const rank = useAuth((auth) => auth.rank);
+  const user = useUser((state) => state.data);
+  const isUserVerified = useUser((state) => state.isVerified);
 
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const menuOpen = Boolean(menuAnchor);
@@ -37,16 +34,16 @@ const AccountBox = ({height}: {height: number}) => {
     <>
       <ButtonBase onClick={handleAvatarClicked} sx={{ height, bgcolor: '#333', borderRadius: 2 }}>
         <Stack direction="row" alignItems="center" spacing={2} mx={1}>
-          {verified && <VerifiedRounded color="primary" sx={{ height: 28, width: 28 }} />}
+          {isUserVerified && <VerifiedRounded color="primary" sx={{ height: 28, width: 28 }} />}
 
           <Stack direction="column">
-            {username && <Typography variant="caption" fontWeight={700}>{username}</Typography>}
+            {user?.username && <Typography variant="caption" fontWeight={700}>{user.username}</Typography>}
             <Typography variant="caption" fontWeight={700}>
-              {`${address?.slice(0, 5)}...${address?.slice(38)}`}
+              {`${user?.address?.slice(0, 5)}...${user?.address?.slice(38)}`}
             </Typography>
           </Stack>
 
-          <Pfp size={height - 12} pfp={pfp} rank={rank} />
+          <Pfp size={height - 12} pfp={user?.pfp} rank={user?.rank} />
         </Stack>
       </ButtonBase>
 
@@ -60,9 +57,9 @@ const AccountBox = ({height}: {height: number}) => {
       >
         <MenuItem sx={{ pointerEvents: 'none' }}>
           <Stack direction="column" alignItems="center" justifyContent="center" spacing={1}>
-            <Pfp size={128} border={4} pfp={pfp} rank={rank} />
-            <Typography variant="h6" fontWeight={700}>{username}</Typography>
-            <Typography variant="caption" fontWeight={700}>{address}</Typography>
+            <Pfp size={128} border={4} pfp={user?.pfp} rank={user?.rank} />
+            <Typography variant="h6" fontWeight={700}>{user?.username}</Typography>
+            <Typography variant="caption" fontWeight={700}>{user?.address}</Typography>
           </Stack>
         </MenuItem>
 
@@ -71,8 +68,8 @@ const AccountBox = ({height}: {height: number}) => {
           <TokenBalanceList />
         </MenuItem>
 
-        {!verified && <Divider />}
-        {!verified && (
+        {!isUserVerified && <Divider />}
+        {!isUserVerified && (
           <MenuItem>
             <ListItemIcon>
               <VerifiedRounded color="primary" />

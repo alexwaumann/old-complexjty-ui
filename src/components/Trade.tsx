@@ -2,9 +2,9 @@ import { TrendingDownRounded, TrendingUpRounded} from "@mui/icons-material";
 import { Box, Button, Grid, InputAdornment, MenuItem, Paper, Select, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useState } from "react";
 
-import useAuth from "../hooks/useAuth";
 import { oraclePriceMapSelector, useOracle } from "../services/oracle";
 import { SupportedToken, TOKEN, TOKENS } from "../services/tokens";
+import { useUser } from "../services/user";
 import { formatTokenAmount, formatUsdPrice } from "../utils/format";
 import { PAIRS, PAIR, SupportedPair } from "../utils/pairs";
 
@@ -14,7 +14,7 @@ const SHORT = 'SHORT';
 
 const Trade = () => {
   const oracle = useOracle(oraclePriceMapSelector);
-  const balances = useAuth((state) => state.balances);
+  const balances = useUser((state) => state.balances);
 
   const [pairName, setPairName] = useState<SupportedPair>('WETH/USDC');
   const [tradeType, setTradeType] = useState<TradeType>(LONG);

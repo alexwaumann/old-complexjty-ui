@@ -7,15 +7,16 @@ import {
 } from "@mui/material";
 
 import AccountBox from "./AccountBox";
-import useAuth from "../hooks/useAuth";
 import { useWallet, wallet } from "../services/wallet";
+import { useUser } from "../services/user";
 
 const toolbarHeight = 72;
 const toolbarPaddingY = 1;
 const toolbarItemHeight = toolbarHeight - toolbarPaddingY * 2 * 8;
 
 const TopBar = () => {
-  const isUserConnected = useAuth((auth) => auth.connected);
+  const isUserConnected = useUser((state) => state.isConnected);
+  const isUserConnecting = useUser((state) => state.isConnecting);
   const isWalletActive = useWallet((state) => state.isActive);
   const isAccountConnecting = useWallet((state) => state.isAccountConnecting);
 
@@ -36,7 +37,7 @@ const TopBar = () => {
           (
             <Button
               variant="contained"
-              disabled={!isWalletActive || isAccountConnecting}
+              disabled={!isWalletActive || isAccountConnecting || isUserConnecting}
               onClick={() => wallet.connect()}
               sx={{ height: toolbarItemHeight }}
             >
