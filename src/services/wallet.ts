@@ -131,6 +131,8 @@ export class Wallet {
       provider: undefined,
       injectedProvider: undefined,
       onTargetChain: false,
+      isAccountConnected: false,
+      isAccountConnecting: false,
       account: undefined,
       signer: undefined,
     });
