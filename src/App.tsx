@@ -10,9 +10,11 @@ import TopBar from './components/TopBar';
 import darkTheme from './darkTheme';
 import TradePage from './pages/TradePage';
 import { useOracleService } from './services/oracle';
+import { useWalletService } from './services/wallet';
 
 const App = () => {
   useOracleService();
+  useWalletService();
 
   return (
     <ThemeProvider theme={darkTheme}>

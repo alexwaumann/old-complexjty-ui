@@ -3,9 +3,7 @@ import ReactDOM from 'react-dom/client';
 
 import App from './App';
 import { user } from './services/user';
-import { wallet } from './services/wallet';
 
-wallet.start();
 user.start();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

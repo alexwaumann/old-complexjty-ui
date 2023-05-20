@@ -17,8 +17,8 @@ const toolbarItemHeight = toolbarHeight - toolbarPaddingY * 2 * 8;
 const TopBar = () => {
   const isUserConnected = useUser((state) => state.isConnected);
   const isUserConnecting = useUser((state) => state.isConnecting);
-  const isWalletActive = useWallet((state) => state.isActive);
-  const isAccountConnecting = useWallet((state) => state.isAccountConnecting);
+  const isWalletActive = useWallet(wallet.selectors.isActive);
+  const isAccountConnecting = useWallet(wallet.selectors.isAccountConnecting);
 
   return(
     <AppBar position="absolute" elevation={0} sx={{ background: '#12121299' }}>

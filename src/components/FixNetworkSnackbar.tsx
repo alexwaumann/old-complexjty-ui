@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useWallet, wallet } from "../services/wallet";
 
 const FixNetworkSnackbar = () => {
-  const onTargetChain = useWallet((state) => state.onTargetChain);
-  const isAccountConnected = useWallet((state) => state.isAccountConnected);
+  const onTargetChain = useWallet(wallet.selectors.onTargetChain);
+  const isAccountConnected = useWallet(wallet.selectors.isAccountConnected);
   const [fixInProgress, setFixInProgress] = useState<boolean>(false);
 
   const fixNetwork = async () => {

@@ -4,6 +4,7 @@
 
 import detectEthereumProvider from '@metamask/detect-provider';
 import { ethers } from 'ethers';
+import { useEffect } from 'react';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
@@ -19,6 +20,9 @@ type MetaMaskEthereumProvider = {
 type RequestArguments = { method: string, params?: unknown[] | object };
 type EthereumProvider = MetaMaskEthereumProvider & { request: (args: RequestArguments) => Promise<any> }
 declare global { interface Window { ethereum?: EthereumProvider } };
+
+const DEV_RPC_URLS: string[] = ['http://localhost:8545'];
+const PROD_RPC_URLS: string[] = ['https://polygon-rpc.com', 'https://polygon.llamarpc.com'];
 
 type WalletState = {
   isActive: boolean
@@ -52,28 +56,47 @@ export const useWallet = create(subscribeWithSelector<WalletState>(() => ({
   signer: undefined,
 })));
 
+export const useWalletService = () => {
+  useEffect(() => {
+    wallet.start();
+    return () => wallet.stop();
+  });
+};
+
 class Wallet {
   private targetChainId: number = 137;
-  private devRpcUrls = ['http://localhost:8545'];
-  private prodRpcUrls = ['https://polygon-rpc.com', 'https://polygon.llamarpc.com'];
+  private rpcUrls = import.meta.env.DEV ? DEV_RPC_URLS : PROD_RPC_URLS;
 
-  public get state() { return useWallet.getState() }
+  public selectors = {
+    isActive: (state: WalletState) => state.isActive,
+    isActivating: (state: WalletState) => state.isActivating,
+    hasNoMetamaskError: (state: WalletState) => state.hasNoMetamaskError,
+    provider: (state: WalletState) => state.provider,
+    injectedProvider: (state: WalletState) => state.injectedProvider,
+    onTargetChain: (state: WalletState) => state.onTargetChain,
+    isAccountConnected: (state: WalletState) => state.isAccountConnected,
+    isAccountConnecting: (state: WalletState) => state.isAccountConnecting,
+    account: (state: WalletState) => state.account,
+    signer: (state: WalletState) => state.signer,
+  };
+
+  public get state(): WalletState { return useWallet.getState() }
+  private set state(newState: Parameters<typeof useWallet.setState>[0]) { useWallet.setState(newState) }
   public subscribe = useWallet.subscribe;
-  private setState = useWallet.setState;
 
   public async start(): Promise<void> {
     if(this.state.isActive || this.state.isActivating) return;
 
-    this.setState({ isActivating: true });
+    this.state = { isActivating: true };
 
     const injectedProvider = await detectEthereumProvider<EthereumProvider>();
     if(injectedProvider === null) {
-      this.setState({ isActivating: false, hasNoMetamaskError: true });
+      this.state = { isActivating: false, hasNoMetamaskError: true };
       console.warn('COMPLEXJTY: NO INJECTED WALLET FOUND');
       return;
     } else if(injectedProvider !== window.ethereum) {
       // todo: we should handle this differently
-      this.setState({ isActivating: false, hasNoMetamaskError: true });
+      this.state = ({ isActivating: false, hasNoMetamaskError: true });
       console.warn('COMPLEXJTY: MULTIPLE INJECTED WALLETS');
       return;
     }
@@ -84,7 +107,7 @@ class Wallet {
 
     const provider = new ethers.BrowserProvider(injectedProvider as ethers.Eip1193Provider);
     const chainId = await provider.getNetwork().then((network) => Number(network.chainId));
-    this.setState({
+    this.state = ({
       isActive: true,
       isActivating: false,
       provider,
@@ -102,12 +125,14 @@ class Wallet {
     this.state.injectedProvider?.removeAllListeners();
     this.state.provider?.destroy();
 
-    this.setState({
+    this.state = ({
       isActive: false,
       isActivating: false,
       provider: undefined,
       injectedProvider: undefined,
       onTargetChain: false,
+      account: undefined,
+      signer: undefined,
     });
   }
 
@@ -118,38 +143,38 @@ class Wallet {
     const { isActive, isAccountConnected, isAccountConnecting } = this.state;
     if(!isActive || isAccountConnected || isAccountConnecting) return;
 
-    this.setState({ isAccountConnecting: true });
+    this.state = { isAccountConnecting: true };
 
     const [account] = await this.state.provider?.send('eth_requestAccounts', []).catch(() => []);
     if(account === undefined) {
-      this.setState({ isAccountConnecting: false });
+      this.state = ({ isAccountConnecting: false });
       return;
     }
 
     const signer = await this.state.provider?.getSigner(account).catch(() => undefined);
     if(signer === undefined) {
       console.warn('COMPLEXJTY: FAILED TO GET SIGNER');
-      this.setState({ isAccountConnecting: false });
+      this.state = ({ isAccountConnecting: false });
       return;
     }
 
     this.shouldEagerlyConnect = true;
-    this.setState({
+    this.state = {
       isAccountConnected: true,
       isAccountConnecting: false,
       account: ethers.getAddress(account),
       signer,
-    });
+    };
   }
 
   public disconnect(): void {
     this.shouldEagerlyConnect = false;
-    this.setState({
+    this.state = {
       isAccountConnected: false,
       isAccountConnecting: false,
       account: undefined,
       signer: undefined,
-    });
+    };
   }
 
   /**
@@ -159,14 +184,14 @@ class Wallet {
     if(!this.state.isActive || this.state.onTargetChain) return;
 
     const error = await this.state.provider
-      ?.send('wallet_switchEthereumChain',[{ chainId: '0x89' }])
+      ?.send('wallet_switchEthereumChain', [{ chainId: '0x89' }])
       .catch((error) => error);
     if(error === null || error?.error?.code !== 4902) return;
 
     await this.state.provider?.send('wallet_addEthereumChain', [{
       chainName: 'Polygon Mainnet',
       chainId: '0x89',
-      rpcUrls: import.meta.env.DEV ? this.devRpcUrls : this.prodRpcUrls,
+      rpcUrls: this.rpcUrls,
       blockExplorerUrls: ['https://polygonscan.com'],
       nativeCurrency: {
         name: 'Matic',
@@ -178,12 +203,12 @@ class Wallet {
 
   private async onChainChanged(chainIdHex: string): Promise<void> {
     const chainId = parseInt(chainIdHex, 16);
-    this.setState({ onTargetChain: chainId === this.targetChainId });
+    this.state = { onTargetChain: chainId === this.targetChainId };
 
     // recreate provider
     this.state.provider?.destroy();
     const provider = new ethers.BrowserProvider(this.state?.injectedProvider as ethers.Eip1193Provider);
-    this.setState({ provider });
+    this.state = { provider };
 
     // recreate signer if account is connected
     if(!this.state.isAccountConnected) return;
@@ -194,7 +219,7 @@ class Wallet {
       return;
     }
 
-    this.setState({ signer });
+    this.state = { signer };
   }
 
   private onAccountsChanged([account]: string[]): void {
