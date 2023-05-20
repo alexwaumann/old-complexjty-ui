@@ -63,7 +63,7 @@ export const useWalletService = () => {
   });
 };
 
-class Wallet {
+export class Wallet {
   private targetChainId: number = 137;
   private rpcUrls = import.meta.env.DEV ? DEV_RPC_URLS : PROD_RPC_URLS;
 
