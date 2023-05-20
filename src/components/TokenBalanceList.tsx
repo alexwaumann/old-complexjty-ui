@@ -1,12 +1,12 @@
 import { Avatar, Box, Stack, Typography } from "@mui/material";
 
-import { oraclePriceMapSelector, useOracle } from '../services/oracle';
+import { oracle, useOracle } from '../services/oracle';
 import { TOKENS } from "../services/tokens";
 import { useUser } from "../services/user";
 import { formatTokenAmount, formatUsdPrice } from "../utils/format";
 
 const TokenBalanceList = () => {
-  const oracle = useOracle(oraclePriceMapSelector);
+  const oracleUsdPrices = useOracle(oracle.selectors.usdPrices);
   const balances = useUser((state) => state.balances);
 
   // TODO: create token component that takes in a symbol and size
@@ -14,7 +14,7 @@ const TokenBalanceList = () => {
     <Stack flexGrow={1} spacing={2}>
       {TOKENS.map((symbol) => {
         const amount = balances[symbol];
-        const usdValue = amount * oracle[symbol];
+        const usdValue = amount * oracleUsdPrices[symbol];
         if(usdValue < 10) return;
         return (
           <Stack key={symbol} direction="row" alignItems="center" spacing={2}>

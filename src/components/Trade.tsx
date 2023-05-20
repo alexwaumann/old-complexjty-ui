@@ -2,7 +2,7 @@ import { TrendingDownRounded, TrendingUpRounded} from "@mui/icons-material";
 import { Box, Button, Grid, InputAdornment, MenuItem, Paper, Select, Slider, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useState } from "react";
 
-import { oraclePriceMapSelector, useOracle } from "../services/oracle";
+import { oracle, useOracle } from "../services/oracle";
 import { SupportedToken, TOKEN, TOKENS } from "../services/tokens";
 import { useUser } from "../services/user";
 import { formatTokenAmount, formatUsdPrice } from "../utils/format";
@@ -13,7 +13,7 @@ const LONG = 'LONG';
 const SHORT = 'SHORT';
 
 const Trade = () => {
-  const oracle = useOracle(oraclePriceMapSelector);
+  const oracleUsdPrices = useOracle(oracle.selectors.usdPrices);
   const balances = useUser((state) => state.balances);
 
   const [pairName, setPairName] = useState<SupportedPair>('WETH/USDC');
@@ -26,7 +26,7 @@ const Trade = () => {
   const [leverage, setLeverage] = useState<number>(2);
 
   const pair = PAIR[pairName];
-  const price = oracle[pair[0].name] / oracle[pair[1].name];
+  const price = oracleUsdPrices[pair[0].name] / oracleUsdPrices[pair[1].name];
 
   const debtToken       = tradeType === LONG ? pair[1] : pair[0];
   const collateralToken = tradeType === LONG ? pair[0] : pair[1];
@@ -74,7 +74,7 @@ const Trade = () => {
             <Box m={1} />
 
             <TextField
-              label={`Pay: $${formatUsdPrice(Number(fundingAmount) * oracle[fundingToken])}`}
+              label={`Pay: $${formatUsdPrice(Number(fundingAmount) * oracleUsdPrices[fundingToken])}`}
               value={fundingAmount ? fundingAmount : ''}
               InputLabelProps={{ shrink: true }}
               placeholder={'0.00'}
@@ -136,7 +136,7 @@ const Trade = () => {
               <Typography variant="subtitle1" fontWeight={700}>Funding</Typography>
               <Stack alignItems="flex-end">
                 <Typography variant="caption" fontWeight={700}>{formatTokenAmount(fundingToken, Number(fundingAmount))} {fundingToken}</Typography>
-                <Typography variant="caption">${formatUsdPrice(Number(fundingAmount) * oracle[fundingToken])}</Typography>
+                <Typography variant="caption">${formatUsdPrice(Number(fundingAmount) * oracleUsdPrices[fundingToken])}</Typography>
               </Stack>
             </Stack>
 
