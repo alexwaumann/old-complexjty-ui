@@ -78,16 +78,25 @@ export class Oracle {
     );
 
     const latestRoundData = await Promise.all(latestRoundDataPromises).catch(() => null);
-    if(latestRoundData === null) return;
+    if(latestRoundData === null) {
+      console.warn('COMPLEXJTY: FAILED TO UPDATE ORACLE USD PRICES');
+      return;
+    };
 
     const latestPrices = latestRoundData.map(
       ({ answer }) => Number(ethers.formatUnits(answer, DECIMALS))
     );
 
+    let shouldUpdateState = false;
     const priceMap: SupportedTokenMap<number> = Object.create(DEFAULT_PRICE_MAP);
-    Object.keys(CONTRACTS).forEach(
-      (token, index) => priceMap[token as SupportedToken] = latestPrices[index]
-    );
+    Object.keys(CONTRACTS).forEach((token, index) => {
+      priceMap[token as SupportedToken] = latestPrices[index]
+      if(this.state.usdPrices[token as SupportedToken] !== latestPrices[index]) {
+        shouldUpdateState = true;
+      }
+    });
+
+    if(!shouldUpdateState) return;
 
     this.state = { ready: true, usdPrices: priceMap };
   }
