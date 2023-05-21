@@ -10,11 +10,13 @@ import TopBar from './components/TopBar';
 import darkTheme from './darkTheme';
 import TradePage from './pages/TradePage';
 import { useOracleService } from './services/oracle';
+import { useUserService } from './services/user';
 import { useWalletService } from './services/wallet';
 
 const App = () => {
   useOracleService();
   useWalletService();
+  useUserService();
 
   return (
     <ThemeProvider theme={darkTheme}>

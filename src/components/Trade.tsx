@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { oracle, useOracle } from "../services/oracle";
 import { SupportedToken, TOKEN, TOKENS } from "../services/tokens";
-import { useUser } from "../services/user";
+import { user, useUser } from "../services/user";
 import { formatTokenAmount, formatUsdPrice } from "../utils/format";
 import { PAIRS, PAIR, SupportedPair } from "../utils/pairs";
 
@@ -14,7 +14,7 @@ const SHORT = 'SHORT';
 
 const Trade = () => {
   const oracleUsdPrices = useOracle(oracle.selectors.usdPrices);
-  const balances = useUser((state) => state.balances);
+  const balances = useUser(user.selectors.balances);
 
   const [pairName, setPairName] = useState<SupportedPair>('WETH/USDC');
   const [tradeType, setTradeType] = useState<TradeType>(LONG);

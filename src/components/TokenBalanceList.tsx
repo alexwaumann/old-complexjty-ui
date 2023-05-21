@@ -2,12 +2,12 @@ import { Avatar, Box, Stack, Typography } from "@mui/material";
 
 import { oracle, useOracle } from '../services/oracle';
 import { TOKENS } from "../services/tokens";
-import { useUser } from "../services/user";
+import { user, useUser } from "../services/user";
 import { formatTokenAmount, formatUsdPrice } from "../utils/format";
 
 const TokenBalanceList = () => {
   const oracleUsdPrices = useOracle(oracle.selectors.usdPrices);
-  const balances = useUser((state) => state.balances);
+  const balances = useUser(user.selectors.balances);
 
   // TODO: create token component that takes in a symbol and size
   return (

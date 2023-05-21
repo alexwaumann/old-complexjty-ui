@@ -8,15 +8,15 @@ import {
 
 import AccountBox from "./AccountBox";
 import { useWallet, wallet } from "../services/wallet";
-import { useUser } from "../services/user";
+import { user, useUser } from "../services/user";
 
 const toolbarHeight = 72;
 const toolbarPaddingY = 1;
 const toolbarItemHeight = toolbarHeight - toolbarPaddingY * 2 * 8;
 
 const TopBar = () => {
-  const isUserConnected = useUser((state) => state.isConnected);
-  const isUserConnecting = useUser((state) => state.isConnecting);
+  const isUserConnected = useUser(user.selectors.isConnected);
+  const isUserConnecting = useUser(user.selectors.isConnecting);
   const isWalletActive = useWallet(wallet.selectors.isActive);
   const isAccountConnecting = useWallet(wallet.selectors.isAccountConnecting);
 

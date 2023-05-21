@@ -2,11 +2,14 @@
  * USER SERVICE
  */
 
+import { ethers } from "ethers";
+import { useEffect } from "react";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { balanceOfAll, SupportedToken } from "./tokens";
+import { provider } from "./provider";
 
-import { wallet } from "./wallet";
+import { balanceOfAll, SupportedToken } from "./tokens";
+import { Wallet, wallet } from "./wallet";
 
 type PfpData = { url: string, rarity: string, attributes: string[] }
 type UserData = { address: string, username: string, rank: string, pfp: PfpData }
@@ -32,25 +35,52 @@ export const useUser = create(subscribeWithSelector<UserState>(() => ({
   balances: { 'USDC': 0, 'MATIC': 0, 'WETH': 0, 'WBTC': 0 },
 })));
 
-// we should probably keep an instance of wallet? maybe?
-// using globals like this is kind of icky
+export const useUserService = () => {
+  useEffect(() => {
+    user.start();
+    return () => user.stop();
+  });
+};
+
 class User {
-  public get state() { return useUser.getState() }
+  private unsubscribeFromWallet: (() => void) | undefined;
+  private updateBalancesIntervalId: number | undefined;
+
+  public selectors = {
+    isConnected: (state: UserState) => state.isConnected,
+    isConnecting: (state: UserState) => state.isConnecting,
+    isVerified: (state: UserState) => state.isVerified,
+    isVerifying: (state: UserState) => state.isVerifying,
+    data: (state: UserState) => state.data,
+    balances: (state: UserState) => state.balances,
+  };
+
+  public get state(): UserState { return useUser.getState() }
+  private set state(newState: Parameters<typeof useUser.setState>[0]) { useUser.setState(newState) }
   public subscribe = useUser.subscribe;
-  public setState = useUser.setState;
 
   public start(): void {
-    wallet.subscribe((state) => state.isAccountConnected, (isAccountConnected) => {
-      isAccountConnected ? this.connect(wallet.state.account as string) : this.disconnect();
-    });
+    if(this.unsubscribeFromWallet !== undefined) return;
+
+    this.unsubscribeFromWallet = wallet.subscribe(wallet.selectors.account, (account) => {
+      account !== undefined ? this.connect(account) : this.disconnect();
+    }, { fireImmediately: true });
   }
 
-  public async connect(account: string): Promise<boolean> {
-    if(this.state.isConnected || this.state.isConnecting) return false;
-    this.setState({ isConnecting: true });
+  public stop(): void {
+    if(this.unsubscribeFromWallet === undefined) return;
+
+    this.unsubscribeFromWallet();
+    this.unsubscribeFromWallet = undefined;
+    this.disconnect();
+  }
+
+  public async connect(account: string): Promise<void> {
+    if(this.state.isConnected || this.state.isConnecting) return;
+    this.state = { isConnecting: true };
 
     // TODO: check if user still has an active verified session
-    const verified = true;
+    const isVerified = true;
 
     // TODO: get username from registry (may not have one)
     const username = account === '0x10Df08114e07858DBEE767D7E2eCb5F488192cA8' ? 'Godyl' : 'Kaneki';
@@ -66,34 +96,50 @@ class User {
       attributes: [],
     };
 
-    // TODO: update balances periodically
-    const balances = await balanceOfAll(account);
-    if(balances !== null) {
-      this.setState({ balances });
-    }
-    
-    this.setState({
+    // periodically update user balances
+    this.updateBalancesIntervalId = setInterval(() => this.updateBalances(), 10000);
+
+    this.state = {
       isConnecting: false,
       isConnected: true,
-      isVerified: verified,
+      isVerified,
       data: {
         address: account,
         username,
         rank,
         pfp,
       },
-    })
+    };
 
-    return true;
+    this.updateBalances();
   }
 
   public disconnect(): void {
-    this.setState({
+    clearInterval(this.updateBalancesIntervalId);
+    this.state = {
       isConnected: false,
       isVerified: false,
       data: undefined,
       balances: { 'USDC': 0, 'MATIC': 0, 'WETH': 0, 'WBTC': 0 },
-    });
+    };
+  }
+
+  public async updateBalances(): Promise<void> {
+    if(this.state.data === undefined) return;
+
+    const balances = await balanceOfAll(this.state.data.address);
+    if(balances === null) return;
+
+    const shouldUpdateState = Object.keys(balances).reduce((result, token) => {
+      if(this.state.balances[token as SupportedToken] !== balances[token as SupportedToken]) {
+        return true;
+      }
+      return result;
+    }, false);
+
+    if(!shouldUpdateState) return;
+
+    this.state = { balances };
   }
 }
 

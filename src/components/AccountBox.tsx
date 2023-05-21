@@ -11,13 +11,13 @@ import {
 import {useState} from "react";
 
 import Pfp from "./Pfp";
-import { useUser } from "../services/user";
+import { user, useUser } from "../services/user";
 import { wallet } from '../services/wallet';
 import TokenBalanceList from "./TokenBalanceList";
 
 const AccountBox = ({height}: {height: number}) => {
-  const user = useUser((state) => state.data);
-  const isUserVerified = useUser((state) => state.isVerified);
+  const userData = useUser(user.selectors.data);
+  const isUserVerified = useUser(user.selectors.isVerified);
 
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const menuOpen = Boolean(menuAnchor);
@@ -37,13 +37,13 @@ const AccountBox = ({height}: {height: number}) => {
           {isUserVerified && <VerifiedRounded color="primary" sx={{ height: 28, width: 28 }} />}
 
           <Stack direction="column">
-            {user?.username && <Typography variant="caption" fontWeight={700}>{user.username}</Typography>}
+            {userData?.username && <Typography variant="caption" fontWeight={700}>{userData.username}</Typography>}
             <Typography variant="caption" fontWeight={700}>
-              {`${user?.address?.slice(0, 5)}...${user?.address?.slice(38)}`}
+              {`${userData?.address?.slice(0, 5)}...${userData?.address?.slice(38)}`}
             </Typography>
           </Stack>
 
-          <Pfp size={height - 12} pfp={user?.pfp} rank={user?.rank} />
+          <Pfp size={height - 12} pfp={userData?.pfp} rank={userData?.rank} />
         </Stack>
       </ButtonBase>
 
@@ -57,9 +57,9 @@ const AccountBox = ({height}: {height: number}) => {
       >
         <MenuItem sx={{ pointerEvents: 'none' }}>
           <Stack direction="column" alignItems="center" justifyContent="center" spacing={1}>
-            <Pfp size={128} border={4} pfp={user?.pfp} rank={user?.rank} />
-            <Typography variant="h6" fontWeight={700}>{user?.username}</Typography>
-            <Typography variant="caption" fontWeight={700}>{user?.address}</Typography>
+            <Pfp size={128} border={4} pfp={userData?.pfp} rank={userData?.rank} />
+            <Typography variant="h6" fontWeight={700}>{userData?.username}</Typography>
+            <Typography variant="caption" fontWeight={700}>{userData?.address}</Typography>
           </Stack>
         </MenuItem>
 
