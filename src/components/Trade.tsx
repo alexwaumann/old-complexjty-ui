@@ -4,32 +4,27 @@ import { useState } from "react";
 
 import { oracle, useOracle } from "../services/oracle";
 import { SupportedToken, TOKEN, TOKENS } from "../services/tokens";
+import { LONG, SHORT, TradeDirection, tradeService, TradeType, useTradeServiceStore } from "../services/trade";
 import { user, useUser } from "../services/user";
 import { formatTokenAmount, formatUsdPrice } from "../utils/format";
 import { PAIRS, PAIR, SupportedPair } from "../utils/pairs";
 
-type TradeType = 'LONG' | 'SHORT';
-const LONG = 'LONG';
-const SHORT = 'SHORT';
-
 const Trade = () => {
   const oracleUsdPrices = useOracle(oracle.selectors.usdPrices);
   const balances = useUser(user.selectors.balances);
-
-  const [pairName, setPairName] = useState<SupportedPair>('WETH/USDC');
-  const [tradeType, setTradeType] = useState<TradeType>(LONG);
+  const inputs = useTradeServiceStore(tradeService.selectors.inputs);
 
   const [fundingToken, setFundingToken] = useState<SupportedToken>('USDC');
   const [fundingAmount, setFundingAmount] = useState<string>('');
   const fundingError: boolean = Number(fundingAmount) > balances[fundingToken];
 
-  const [leverage, setLeverage] = useState<number>(2);
-
-  const pair = PAIR[pairName];
+  const pair = PAIR[inputs.pairName];
   const price = oracleUsdPrices[pair[0].name] / oracleUsdPrices[pair[1].name];
 
-  const debtToken       = tradeType === LONG ? pair[1] : pair[0];
-  const collateralToken = tradeType === LONG ? pair[0] : pair[1];
+  const debtToken       = inputs.direction === LONG ? pair[1] : pair[0];
+  const collateralToken = inputs.direction === LONG ? pair[0] : pair[1];
+
+  const fundingAmountUsd = formatUsdPrice(Number(inputs.fundingAmount) * oracleUsdPrices[inputs.fundingToken]);
 
   return (
     <Grid container spacing={2}>
@@ -38,8 +33,8 @@ const Trade = () => {
         <Paper sx={{ p: 2, borderRadius: 2 }}>
           <Stack direction="row" alignItems="center" spacing={4}>
             <Select
-              value={pairName}
-              onChange={(event) => setPairName(event.target.value as SupportedPair)}
+              value={inputs.pairName}
+              onChange={(event) => tradeService.updateInputs({ pairName: event.target.value as SupportedPair })}
               color="primary"
             >
               {PAIRS.map((pairName) => <MenuItem key={pairName} value={pairName}>{pairName}</MenuItem>)}
@@ -53,8 +48,8 @@ const Trade = () => {
         <Paper sx={{ height: 300, p: 2, borderRadius: 2 }}>
           <Stack justifyContent="space-between" height="100%">
             <ToggleButtonGroup
-              value={tradeType}
-              onChange={(event, value: TradeType | null) => { if(value !== null) setTradeType(value) }}
+              value={inputs.direction}
+              onChange={(_, value: TradeDirection | null) => {if(value !== null) tradeService.updateInputs({ direction: value })}}
               exclusive
               color="primary"
               fullWidth
@@ -74,11 +69,10 @@ const Trade = () => {
             <Box m={1} />
 
             <TextField
-              label={`Pay: $${formatUsdPrice(Number(fundingAmount) * oracleUsdPrices[fundingToken])}`}
-              value={fundingAmount ? fundingAmount : ''}
+              label={`Pay: $${fundingAmountUsd}`}
+              value={fundingAmount}
               InputLabelProps={{ shrink: true }}
               placeholder={'0.00'}
-              helperText={`Balance: ${balances[fundingToken]}`}
               error={fundingError}
               InputProps={{
                 endAdornment: (
@@ -104,24 +98,29 @@ const Trade = () => {
                 if(isNaN(Number(amount))) return;
 
                 setFundingAmount(amount);
+                tradeService.updateInputs({ fundingAmount: amount });
               }}
               fullWidth
             />
 
+            <Typography variant="caption">Balance: {balances[fundingToken]}</Typography>
+
             <Stack direction="row" alignItems="center" justifyContent="space-between">
               <Typography>Leverage</Typography>
-              <Typography>{leverage}x</Typography>
+              <Typography>{inputs.leverageMultiplier}x</Typography>
             </Stack>
 
             <Slider
               aria-label="Leverage Multiplier"
-              value={leverage}
+              value={inputs.leverageMultiplier}
               step={0.1}
               min={1.5}
               max={TOKEN[fundingToken].maxLeverage}
               valueLabelDisplay="auto"
               size="small"
-              onChange={(event: Event, value: number | number[]) => { if(typeof value === 'number') setLeverage(value) }}
+              onChange={(_, value: number | number[]) => {
+                if(typeof value === 'number') tradeService.updateInputs({ leverageMultiplier: value });
+              }}
             />
             <Button variant="outlined" disabled={!fundingAmount || fundingError}>Open position</Button>
           </Stack>
