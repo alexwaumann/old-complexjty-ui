@@ -19,12 +19,12 @@ export type Token = {
 
 export const USDC: Token = {
   name: 'USDC', decimals: 6, address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', isNative: false,
-  liquidationThreshold: 0.85, maxLeverage: 5, logoUrl: '/token-images/usdc.png',
+  liquidationThreshold: 0.85, maxLeverage: 5.5, logoUrl: '/token-images/usdc.png',
 };
 
 export const MATIC: Token = {
   name: 'MATIC', decimals: 18, address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', isNative: true,
-  liquidationThreshold: 0.7, maxLeverage: 2.5, logoUrl: '/token-images/matic.png',
+  liquidationThreshold: 0.73, maxLeverage: 3.0, logoUrl: '/token-images/matic.png',
 };
 
 export const WETH: Token = {
@@ -34,7 +34,7 @@ export const WETH: Token = {
 
 export const WBTC: Token = {
   name: 'WBTC', decimals: 8, address: '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', isNative: false,
-  liquidationThreshold: 0.75, maxLeverage: 3, logoUrl: '/token-images/wbtc.png',
+  liquidationThreshold: 0.78, maxLeverage: 3.5, logoUrl: '/token-images/wbtc.png',
 };
 
 export const TOKENS: SupportedToken[] = ['USDC', 'MATIC', 'WETH', 'WBTC'];
