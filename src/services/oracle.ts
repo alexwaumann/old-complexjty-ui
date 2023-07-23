@@ -57,6 +57,7 @@ export class Oracle {
 
   public get state(): OracleData { return useOracle.getState() }
   private set state(newState: Parameters<typeof useOracle.setState>[0]) { useOracle.setState(newState) }
+  public subscribe = useOracle.subscribe;
 
   public start(): void {
     if(this.serviceId !== undefined) return;

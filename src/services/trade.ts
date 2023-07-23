@@ -80,9 +80,9 @@ class TradeService {
   public get state(): TradeServiceState { return useTradeServiceStore.getState() }
   private set state(newState: Parameters<typeof useTradeServiceStore.setState>[0]) { useTradeServiceStore.setState(newState) }
 
-  private debouncedCalculate = debounce(() => this.calculate());
+  public debouncedCalculate = debounce(() => this.calculate());
 
-  private calculate(): void {
+  public calculate(): void {
     const inputs = this.state.inputs;
     const usdPrices = oracle.state.usdPrices;
 
@@ -173,4 +173,8 @@ class TradeService {
 
 export const tradeService = new TradeService();
 
-// TODO: subscribe to oracle and recalculate on pair price change
+oracle.subscribe((state) => {
+  if(!state.ready) return;
+
+  tradeService.calculate();
+});
