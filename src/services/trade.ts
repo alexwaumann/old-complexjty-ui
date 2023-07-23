@@ -11,10 +11,11 @@ import { create } from "zustand";
 import { oracle } from './oracle';
 import { PAIR, SupportedPair } from "../utils/pairs";
 import { SupportedToken } from "./tokens";
+import { debounce } from "../utils/debounce";
 
 export type TradeDirection = 'LONG' | 'SHORT';
 export type TradeType = 'MARKET' | 'LIMIT';
-type TradeInput = {
+export type TradeInput = {
   type: TradeType
   direction: TradeDirection
   pairName: SupportedPair
@@ -25,7 +26,7 @@ type TradeInput = {
   stopLossPrice: string
   takeProfitPrice: string
 };
-type TradeDetails = {
+export type TradeDetails = {
   type: TradeType
   direction: TradeDirection
   openPrice: number
@@ -73,10 +74,13 @@ export const useTradeServiceStore = create<TradeServiceState>(() => ({
 class TradeService {
   public selectors = {
     inputs: (state: TradeServiceState) => state.inputs,
+    details: (state: TradeServiceState) => state.details,
   };
 
   public get state(): TradeServiceState { return useTradeServiceStore.getState() }
   private set state(newState: Parameters<typeof useTradeServiceStore.setState>[0]) { useTradeServiceStore.setState(newState) }
+
+  private debouncedCalculate = debounce(() => this.calculate());
 
   private calculate(): void {
     const inputs = this.state.inputs;
@@ -100,8 +104,10 @@ class TradeService {
     const swapFeeRate = 0.0005;
     const flashloanFeeRate = 0.0009;
 
-    // exit early if no funding amount or limit price on limit order
-    if(fundingAmount <= 0 || (inputs.type === LIMIT && limitPrice <= 0)) return;
+    if(fundingAmount <= 0 || (inputs.type === LIMIT && limitPrice <= 0)) {
+      this.state = { details: null };
+      return;
+    }
 
     let openPrice = usdPrices[pair[0].name] / usdPrices[pair[1].name];
     if(inputs.type === LIMIT) openPrice = limitPrice;
@@ -160,7 +166,8 @@ class TradeService {
     if(inputs.leverageMultiplier !== undefined && inputs.leverageMultiplier < 0) return;
 
     this.state = (state) => ({ inputs: { ...state.inputs, ...inputs } });
-    this.calculate();
+
+    this.debouncedCalculate();
   };
 }
 
