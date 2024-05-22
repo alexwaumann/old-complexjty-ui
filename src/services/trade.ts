@@ -158,6 +158,8 @@ class TradeService {
         flashloanFeeUsd,
       }
     };
+
+    console.log(this.state);
   };
 
   public updateInputs(inputs: Partial<TradeInput>) {

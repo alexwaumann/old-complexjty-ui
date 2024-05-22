@@ -1,6 +1,6 @@
 import { Box, Container, Grid, Paper } from "@mui/material";
 
-import Trade from "../components/Trade";
+import TradeBox from "../components/TradeBox";
 
 
 const TradePage = () => {
@@ -8,7 +8,7 @@ const TradePage = () => {
 
   return (
     <Container maxWidth="xl">
-      <Trade />
+      <TradeBox />
       <Box m={2} />
       <Grid container spacing={2}>
         {positions.map((value) => (
